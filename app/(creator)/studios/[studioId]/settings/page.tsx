@@ -1,13 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { use, useState } from "react"
 
 export default function StudioSettingsPage({
   params,
 }: {
   params: Promise<{ studioId: string }>
 }) {
+  const { studioId } = use(params)
   const [activeTab, setActiveTab] = useState("general")
   return (
     <div className="bg-gray-50 font-sans">
@@ -532,12 +533,12 @@ export default function StudioSettingsPage({
                         </div>
                         <h3 className="text-lg sm:text-xl font-bold text-gray-900">Plans &amp; Access</h3>
                       </div>
-                      <button type="button" className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 text-sm">
-                        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <Link href={`/studios/${studioId}/plans/new`} className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 text-sm inline-flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                         </svg>
                         Add Plan
-                      </button>
+                      </Link>
                     </div>
 
                     <div className="space-y-3">
