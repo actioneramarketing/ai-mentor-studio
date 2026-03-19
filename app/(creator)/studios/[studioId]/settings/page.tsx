@@ -518,8 +518,9 @@ export default function StudioSettingsPage({
                     </div>
                   </div>
                 </div>
+                )}
 
-                {/* Plans tab */}
+                {activeTab === "plans" && (
                 <div id="plans-tab" className="tab-content">
                   <div id="plans-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
@@ -599,8 +600,9 @@ export default function StudioSettingsPage({
                     </div>
                   </div>
                 </div>
+                )}
 
-                {/* Members tab */}
+                {activeTab === "members" && (
                 <div id="members-tab" className="tab-content">
                   <div id="members-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
@@ -703,8 +705,9 @@ export default function StudioSettingsPage({
                     </div>
                   </div>
                 </div>
+                )}
 
-                {/* Danger Zone tab */}
+                {activeTab === "danger" && (
                 <div id="danger-tab" className="tab-content">
                   <div id="danger-zone-section" className="bg-white rounded-2xl border-2 border-red-200 p-6 sm:p-8 shadow-sm">
                     <div className="flex items-center space-x-3 mb-2">
@@ -745,6 +748,7 @@ export default function StudioSettingsPage({
                     </div>
                   </div>
                 </div>
+                )}
 
                 <div id="action-buttons" className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-4 sticky bottom-4 bg-gray-50 py-4 rounded-xl">
                   <button type="button" className="px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200 order-2 sm:order-1">
