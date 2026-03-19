@@ -585,3 +585,5 @@ export default function StudioDetailPage() {
         </div>
       </div>
     </div>
+  )
+}
