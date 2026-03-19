@@ -134,7 +134,6 @@ export default function LoginPage() {
             </a>
           </div>
         </div>
-      </div>
     </main>
   )
 }
