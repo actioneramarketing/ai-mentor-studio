@@ -373,14 +373,14 @@ export default function DashboardPage() {
         <section className="mb-8 sm:mb-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Your AI Studios</h3>
-              <p className="text-sm sm:text-base text-gray-600">Manage your workspaces and mentors</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Your Studios</h3>
+              <p className="text-sm sm:text-base text-gray-600">Quick access to your most active studios</p>
             </div>
             <button className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl transition-all duration-200 inline-flex items-center justify-center space-x-2">
+              <span className="text-sm sm:text-base">View All Studios</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
               </svg>
-              <span className="text-sm sm:text-base">Filter Studios</span>
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -526,116 +526,6 @@ export default function DashboardPage() {
                   <span>Last activity: 4 hours ago</span>
                 </div>
                 <button className="w-full px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base">Manage Studio</button>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-xl">
-              <div className="p-5 sm:p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md">
-                      <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                        <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="text-base sm:text-lg font-bold text-gray-900">Study Buddy</h4>
-                      <p className="text-xs sm:text-sm text-gray-500">Education & Learning</p>
-                    </div>
-                  </div>
-                  <span className="px-2 sm:px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">Draft</span>
-                </div>
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-5 py-3 sm:py-4 bg-gray-50 rounded-xl">
-                  <div className="text-center">
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">3</p>
-                    <p className="text-xs text-gray-600">Mentors</p>
-                  </div>
-                  <div className="text-center border-x border-gray-200">
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">0</p>
-                    <p className="text-xs text-gray-600">Users</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">0</p>
-                    <p className="text-xs text-gray-600">Chats</p>
-                  </div>
-                </div>
-                <div className="mb-4 sm:mb-5">
-                  <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2">
-                    <span>Setup Progress</span>
-                    <span className="font-semibold text-yellow-600">45%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full" style={{ width: "45%" }} />
-                  </div>
-                </div>
-                <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-4 sm:mb-5">
-                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                  </svg>
-                  <span>Created: 3 days ago</span>
-                </div>
-                <button className="w-full px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base">Continue Setup</button>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-xl">
-              <div className="p-5 sm:p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md">
-                      <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="text-base sm:text-lg font-bold text-gray-900">Creative Studio</h4>
-                      <p className="text-xs sm:text-sm text-gray-500">Art & Design</p>
-                    </div>
-                  </div>
-                  <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
-                </div>
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-5 py-3 sm:py-4 bg-gray-50 rounded-xl">
-                  <div className="text-center">
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">4</p>
-                    <p className="text-xs text-gray-600">Mentors</p>
-                  </div>
-                  <div className="text-center border-x border-gray-200">
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">724</p>
-                    <p className="text-xs text-gray-600">Users</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">4.8K</p>
-                    <p className="text-xs text-gray-600">Chats</p>
-                  </div>
-                </div>
-                <div className="mb-4 sm:mb-5">
-                  <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2">
-                    <span>Monthly Growth</span>
-                    <span className="font-semibold text-green-600">+15%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-pink-500 to-pink-600 h-2 rounded-full" style={{ width: "68%" }} />
-                  </div>
-                </div>
-                <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-4 sm:mb-5">
-                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                  </svg>
-                  <span>Last activity: 30 minutes ago</span>
-                </div>
-                <button className="w-full px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base">Manage Studio</button>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl sm:rounded-2xl border-2 border-dashed border-blue-300 hover:border-blue-400 transition-all duration-200 overflow-hidden group hover:shadow-xl cursor-pointer">
-              <div className="p-5 sm:p-6 h-full flex flex-col items-center justify-center text-center min-h-[300px] sm:min-h-[350px]">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-lg mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-200">
-                  <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                  </svg>
-                </div>
-                <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Create New Studio</h4>
-                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 max-w-xs">Start a new AI Studio to organize mentors around a specific topic or audience</p>
-                <button className="px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base">
-                  Get Started
-                </button>
               </div>
             </div>
           </div>
