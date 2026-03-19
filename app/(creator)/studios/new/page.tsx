@@ -1,4 +1,26 @@
-export default function NewMentorPage() {
+import Link from "next/link"
+import { redirect } from "next/navigation"
+import { createSupabaseServer } from "@/lib/db"
+
+async function createStudio(formData: FormData) {
+  "use server"
+
+  const name = formData.get("name") as string
+  const slug = formData.get("slug") as string
+  const description = (formData.get("description") as string) || ""
+
+  const supabase = createSupabaseServer()
+  const { data, error } = await supabase
+    .from("studios")
+    .insert({ name, slug, description })
+    .select()
+    .single()
+
+  if (error) throw error
+  redirect(`/studios/${data.id}/settings`)
+}
+
+export default function NewStudioPage() {
   return (
     <div className="bg-gray-50 font-sans">
       <header id="header" className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -53,12 +75,12 @@ export default function NewMentorPage() {
         <aside id="sidebar" className="w-full lg:w-72 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 lg:min-h-[calc(100vh-73px)] lg:sticky lg:top-[73px]">
           <nav className="p-4">
             <div className="space-y-1">
-              <a href="#" id="nav-workspaces" className="flex items-center space-x-3 px-3 sm:px-4 py-3 rounded-xl bg-blue-50 text-blue-700 font-medium transition-all duration-200">
+              <Link href="/studios" id="nav-workspaces" className="flex items-center space-x-3 px-3 sm:px-4 py-3 rounded-xl bg-blue-50 text-blue-700 font-medium transition-all duration-200">
                 <svg className="w-5 h-5 text-base sm:text-lg flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.37 5.73zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z" />
                 </svg>
                 <span className="text-sm sm:text-base">Workspaces</span>
-              </a>
+              </Link>
 
               <a href="#" className="flex items-center space-x-3 px-3 sm:px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200">
                 <svg className="w-5 h-5 text-base sm:text-lg flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -118,11 +140,11 @@ export default function NewMentorPage() {
           <div className="max-w-7xl mx-auto">
             <div id="page-header" className="mb-6 sm:mb-8">
               <div className="flex items-center space-x-3 mb-4">
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                <Link href="/studios" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200">
                   <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
                   </svg>
-                </button>
+                </Link>
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Create a New Workspace</h2>
                   <p className="text-sm sm:text-base text-gray-600 mt-1">Set up a new workspace to build and manage your AI mentors.</p>
@@ -131,7 +153,7 @@ export default function NewMentorPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-              <div className="lg:col-span-2 space-y-6">
+              <form action={createStudio} className="lg:col-span-2 space-y-6 block">
                 <div id="workspace-basics-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
                   <div className="flex items-center space-x-3 mb-6">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -145,14 +167,14 @@ export default function NewMentorPage() {
                   <div className="space-y-5">
                     <div>
                       <label htmlFor="workspace-name" className="block text-sm font-semibold text-gray-900 mb-2">Workspace Name</label>
-                      <input type="text" id="workspace-name" placeholder="e.g., Prepared Life" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900" />
+                      <input type="text" id="workspace-name" name="name" placeholder="e.g., Prepared Life" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900" />
                     </div>
 
                     <div>
                       <label htmlFor="workspace-slug" className="block text-sm font-semibold text-gray-900 mb-2">Workspace Slug</label>
                       <div className="flex items-center space-x-2">
                         <span className="text-gray-500 text-sm">/w/</span>
-                        <input type="text" id="workspace-slug" placeholder="prepared-life" className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900" />
+                        <input type="text" id="workspace-slug" name="slug" placeholder="prepared-life" className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900" />
                       </div>
                       <p className="text-xs text-gray-500 mt-2">This will be used in your workspace URL.</p>
                     </div>
@@ -170,8 +192,8 @@ export default function NewMentorPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Description</label>
-                    <textarea rows={4} placeholder="Describe what this workspace is for..." className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 resize-none" />
+                    <label htmlFor="workspace-description" className="block text-sm font-semibold text-gray-900 mb-2">Description</label>
+                    <textarea id="workspace-description" name="description" rows={4} placeholder="Describe what this workspace is for..." className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 resize-none" />
                     <p className="text-xs text-gray-500 mt-2">Help users understand the purpose of this workspace.</p>
                   </div>
                 </div>
@@ -191,8 +213,8 @@ export default function NewMentorPage() {
                       <label className="block text-sm font-semibold text-gray-900 mb-3">Upload Logo</label>
                       <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-8 text-center hover:border-blue-400 transition-colors duration-200 cursor-pointer">
                         <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                          <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                          <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 576 512" aria-hidden>
+                            <path d="M543.8 287.6c17 0 32-14 32-32.1c1-9-3-17-11-24L512 185V64c0-17.7-14.3-32-32-32H448c-17.7 0-32 14.3-32 32v36.7L309.5 7c-6-5-14-7-21-7s-15 1-22 8L10 231.5c-7 7-10 15-10 24c0 18 14 32.1 32 32.1h32v69.7c-.1 .9-.1 1.8-.1 2.8V472c0 22.1 17.9 40 40 40h16c1.2 0 2.5-.1 3.8-.2c1.1 .1 2.2 .2 3.3 .2h56c10.4 0 20.7-4.2 28.2-11.6c7.3 7.4 17.5 11.6 28.2 11.6h56c10.4 0 20.7-4.2 28.2-11.6c7.3 7.4 17.5 11.6 28.2 11.6h56c10.4 0 20.7-4.2 28.2-11.6c7.3 7.4 17.5 11.6 28.2 11.6h16c22.1 0 40-17.9 40-40V285.9c0-1 0-1.9-.1-2.8v-69.6H543.8zM460.1 174.1L512 142.9 512 96h-64v96.6l52.1 18.5zM460.1 174.1L512 142.9 512 96h-64v96.6l52.1 18.5zM288 160c0-8.8 7.2-16 16-16s16 7.2 16 16v64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H320v64c0 8.8-7.2 16-16 16s-16-7.2-16-16V256H224c-8.8 0-16-7.2-16-16s7.2-16 16-16h64V160zM96 64H192v96.6L139.9 175 96 174.1V64zM64 256V174.1l43.9 .9L192 160.6V64H96V174.1L64 256zM64 256V174.1l43.9 .9L192 160.6V64H96V174.1L64 256zm384 216c0 4.4-3.6 8-8 8h-56c-4.4 0-8-3.6-8-8V288H264v176c0 4.4-3.6 8-8 8H184c-4.4 0-8-3.6-8-8V288H96v184c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8V285.9c0-1 0-1.9 .1-2.8V256h383.9v213.1c0 1-.1 1.9-.1 2.8V472z" />
                           </svg>
                         </div>
                         <p className="text-sm font-medium text-gray-900 mb-1">Click to upload or drag and drop</p>
@@ -221,17 +243,17 @@ export default function NewMentorPage() {
                 </div>
 
                 <div id="action-buttons" className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
-                  <button className="px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200 order-2 sm:order-1">
+                  <Link href="/studios" className="px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200 order-2 sm:order-1 text-center">
                     Cancel
-                  </button>
-                  <button className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center space-x-2 order-1 sm:order-2 flex-1 sm:flex-initial">
+                  </Link>
+                  <button type="submit" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center space-x-2 order-1 sm:order-2 flex-1 sm:flex-initial">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                     </svg>
                     <span>Create Workspace</span>
                   </button>
                 </div>
-              </div>
+              </form>
 
               <div className="lg:col-span-1">
                 <div className="sticky top-24">
