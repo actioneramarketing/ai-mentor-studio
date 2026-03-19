@@ -1,4 +1,8 @@
+import { useState } from "react"
+
 export default function StudioDetailPage() {
+  const [activeTab, setActiveTab] = useState("mentors")
+
   return (
     <div className="bg-gray-50 font-sans">
       <header id="header" className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -126,21 +130,22 @@ export default function StudioDetailPage() {
 
           <div id="top-level-tabs" className="mb-6 border-b border-gray-200">
             <div className="flex space-x-1 sm:space-x-2 overflow-x-auto">
-              <button type="button" className="tab-button px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap">
+              <button type="button" onClick={() => setActiveTab("mentors")} className={`tab-button px-4 sm:px-6 py-3 text-sm sm:text-base whitespace-nowrap ${activeTab === "mentors" ? "font-semibold text-blue-600 border-b-2 border-blue-600" : "font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200"}`}>
                 <svg className="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 640 512" aria-hidden><path d="M320 0c17.7 0 32 14.3 32 32V64h92c6.4 0 12.5 2.5 17 7s7 10.6 7 17v24 64 24c0 6.4-2.5 12.5-7 17s-10.6 7-17 7H428v64h52c13.3 0 24 10.7 24 24s-10.7 24-24 24H428v64h52c6.4 0 12.5 2.5 17 7s7 10.6 7 17v24 64 24c0 6.4-2.5 12.5-7 17s-10.6 7-17 7H352v32c0 17.7-14.3 32-32 32s-32-14.3-32-32V448H188c-6.4 0-12.5-2.5-17-7s-7-10.6-7-17V416 352 328c0-6.4 2.5-12.5 7-17s10.6-7 17-7h68V240H188c-6.4 0-12.5-2.5-17-7s-7-10.6-7-17V192 128 104c0-6.4 2.5-12.5 7-17s10.6-7 17-7h68V32c0-17.7 14.3-32 32-32zM176 88c0-4.4 3.6-8 8-8h64c4.4 0 8 3.6 8 8v24c0 4.4-3.6 8-8 8H184c-4.4 0-8-3.6-8-8V88zm-64 40V96h16v32H112zm-48 8H192v64H24c-13.3 0-24-10.7-24-24s10.7-24 24-24zM24 240H192v64H24c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 96H192v64H24c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 96H192v64H24c-13.3 0-24-10.7-24-24s10.7-24 24-24zM320 480c17.7 0 32-14.3 32-32V416h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H352v32c0 17.7-14.3 32-32 32zm160-96h16v32h-16V384zm48-176c0 13.3-10.7 24-24 24H448v64h96c13.3 0 24 10.7 24 24s-10.7 24-24 24H448v64h96c13.3 0 24 10.7 24 24s-10.7 24-24 24H448v24c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8V360c0-4.4 3.6-8 8-8h80V288H344c-13.3 0-24-10.7-24-24s10.7-24 24-24h96V176H344c-13.3 0-24-10.7-24-24s10.7-24 24-24h96V88c0-4.4 3.6-8 8-8H456c4.4 0 8 3.6 8 8v96zm-72-64a16 16 0 1 0 -32 0 16 16 0 1 0 32 0zm48 16a16 16 0 1 0 0-32 16 16 0 1 0 0 32z" /></svg>
                 Mentors
               </button>
-              <button type="button" className="tab-button px-4 sm:px-6 py-3 text-sm sm:text-base font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200 whitespace-nowrap">
+              <button type="button" onClick={() => setActiveTab("access")} className={`tab-button px-4 sm:px-6 py-3 text-sm sm:text-base whitespace-nowrap ${activeTab === "access" ? "font-semibold text-blue-600 border-b-2 border-blue-600" : "font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200"}`}>
                 <svg className="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M312 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H80c-35.3 0-64 28.7-64 64v16 16 48 16 256 16 16 48 16c0 35.3 28.7 64 64 64H232V488c0 13.3 10.7 24 24 24s24-10.7 24-24V448h80c35.3 0 64-28.7 64-64V384 288 272 224 208 192 208 128 64 64 64H264V24zM96 192H208v96H96V192zm224 0H480v96H320V192zM96 320H208v96H96V320zm224 0H480v96H320V320z" /></svg>
                 Access
               </button>
-              <button type="button" className="tab-button px-4 sm:px-6 py-3 text-sm sm:text-base font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200 whitespace-nowrap">
+              <button type="button" onClick={() => setActiveTab("leads")} className={`tab-button px-4 sm:px-6 py-3 text-sm sm:text-base whitespace-nowrap ${activeTab === "leads" ? "font-semibold text-blue-600 border-b-2 border-blue-600" : "font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200"}`}>
                 <svg className="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 640 512" aria-hidden><path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
                 Leads
               </button>
             </div>
           </div>
 
+          {activeTab === "mentors" && (
           <div id="mentors-tab-content" className="tab-content">
             <div id="action-bar" className="mb-6 sm:mb-8 bg-white rounded-xl border border-gray-200 p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -435,8 +440,10 @@ export default function StudioDetailPage() {
               </div>
             </div>
           </div>
+          )}
 
-          <div id="access-tab-content" className="tab-content hidden">
+          {activeTab === "access" && (
+          <div id="access-tab-content" className="tab-content">
             <div className="mb-6 sm:mb-8 bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6">
                 <div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Users with Access</h3><p className="text-sm text-gray-600">Manage who can access mentors in this workspace</p></div>
@@ -477,11 +484,13 @@ export default function StudioDetailPage() {
               </div>
             </div>
             <div id="access-empty-state" className="hidden bg-white rounded-2xl border-2 border-dashed border-gray-300 p-12 sm:p-16 text-center">
-              <div className="max-w-lg mx-auto"><div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6"><svg className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M312 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H80c-35.3 0-64 28.7-64 64v16 16 48 16 256 16 16 48 16c0 35.3 28.7 64 64 64H232V488c0 13.3 10.7 24 24 24s24-10.7 24-24V448h80c35.3 0 64-28.7 64-64V384 288 272 224 208 192 208 128 64 64 64H264V24z" /></svg></div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">No Users Yet</h3><p className="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">Start by inviting users or creating a lead capture page to grow your audience.</p><div className="flex flex-col sm:flex-row items-center justify-center gap-3"><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg inline-flex items-center space-x-2 w-full sm:w-auto justify-center"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M64 112c-8.8 0-16 7.2-16 16v22.1L220.5 291.7c20.7 17 50.4 17 71.1 0L464 150.1V128c0-8.8-7.2-16-16-16H64z" /></svg><span>Invite Users</span></button><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl inline-flex items-center space-x-2 w-full sm:w-auto justify-center"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 384 512" aria-hidden><path d="M0 64C0 28.7 28.7 0 64 0H320c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z" /></svg><span>Create Lead Page</span></button></div></div>
-            </div>
+              <div className="max-w-lg mx-auto"><div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6"><svg className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M312 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H80c-35.3 0-64 28.7-64 64v16 16 48 16 256 16 16 48 16c0 35.3 28.7 64 64 64H232V488c0 13.3 10.7 24 24 24s24-10.7 24-24V448h80c35.3 0 64-28.7 64-64V384 288 272 224 208 192 208 128 64 64 64H264V24z" /></svg></div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">No Users Yet</h3><p className="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">Start by inviting users or creating a lead capture page to grow your audience.</p><div className="flex flex-col sm:flex-row items-center justify-center gap-3"><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg inline-flex items-center space-x-2 w-full sm:w-auto justify-center"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M64 112c-8.8 0-16 7.2-16 16v22.1L220.5 291.7c20.7 17 50.4 17 71.1 0L464 150.1V128c0-8.8-7.2-16-16-16H64z" /></svg><span>Invite Users</span></button><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl inline-flex items-center space-x-2 w-full sm:w-auto justify-center"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 384 512" aria-hidden><path d="M0 64C0 28.7 28.7 0 64 0H320c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z" /></svg><span>Create Lead Page</span></button></div>            </div>
           </div>
+          </div>
+          )}
 
-          <div id="leads-tab-content" className="tab-content hidden">
+          {activeTab === "leads" && (
+          <div id="leads-tab-content" className="tab-content">
             <div className="mb-6 sm:mb-8 bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6">
                 <div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Captured Leads</h3><p className="text-sm text-gray-600">View and manage all leads from your lead capture pages</p></div>
@@ -500,9 +509,10 @@ export default function StudioDetailPage() {
               </div>
             </div>
             <div id="leads-empty-state" className="hidden bg-white rounded-2xl border-2 border-dashed border-gray-300 p-12 sm:p-16 text-center">
-              <div className="max-w-lg mx-auto"><div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6"><svg className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" fill="currentColor" viewBox="0 0 640 512" aria-hidden><path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z" /></svg></div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">No Leads Yet</h3><p className="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">Create your first lead capture page to start collecting interested users for your AI coaches.</p><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg inline-flex items-center space-x-2"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg><span>Create Lead Page</span></button></div>
-            </div>
+              <div className="max-w-lg mx-auto"><div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6"><svg className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" fill="currentColor" viewBox="0 0 640 512" aria-hidden><path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z" /></svg></div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">No Leads Yet</h3><p className="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">Create your first lead capture page to start collecting interested users for your AI coaches.</p><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg inline-flex items-center space-x-2"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg><span>Create Lead Page</span></button>            </div>
           </div>
+          </div>
+          )}
         </main>
       </div>
 
