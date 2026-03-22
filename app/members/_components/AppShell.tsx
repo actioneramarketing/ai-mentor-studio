@@ -94,6 +94,19 @@ function resolveActiveHref(pathname: string, items: NavItem[]): string | null {
   return matches.reduce((a, b) => (a.href.length >= b.href.length ? a : b)).href;
 }
 
+function isStudioScopedRoute(pathname: string): boolean {
+  const parts = pathname.split("/").filter(Boolean);
+  return parts[0] === "studios" && parts.length >= 2 && parts[1] !== "new";
+}
+
+function BackToStudiosIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className ?? "w-5 h-5"} fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+      <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+    </svg>
+  );
+}
+
 export function AppShell({
   children,
   userProfile,
@@ -131,6 +144,8 @@ export function AppShell({
   }, [pathname, closeMobileSidebar]);
 
   const sidebarWidthClass = sidebarCollapsed ? "lg:w-20" : "lg:w-72";
+
+  const isStudioRoute = isStudioScopedRoute(pathname);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -261,13 +276,17 @@ export function AppShell({
             w-72 max-w-[85vw] lg:max-w-none
           `}
         >
-          <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-gray-100 hidden lg:flex">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide truncate px-1">
-              Navigation
-            </span>
+          <div
+            className={`border-b border-gray-100 hidden lg:flex ${sidebarCollapsed ? "items-center justify-center px-2 py-2" : "items-center justify-between gap-2 px-3 py-2"}`}
+          >
+            {!sidebarCollapsed ? (
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide truncate px-1">
+                Navigation
+              </span>
+            ) : null}
             <button
               type="button"
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 flex-shrink-0"
               aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               onClick={() => setSidebarCollapsed((c) => !c)}
             >
@@ -278,7 +297,26 @@ export function AppShell({
           </div>
 
           <nav className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-1">
+            {isStudioRoute ? (
+              <Link
+                href="/studios"
+                title={sidebarCollapsed ? "Back to Studios" : undefined}
+                className={`
+                  mb-4 flex items-center rounded-lg py-2 text-sm font-medium text-gray-600 transition
+                  hover:bg-blue-50 hover:text-blue-600
+                  px-4
+                  ${sidebarCollapsed ? "lg:justify-center lg:px-2" : ""}
+                `}
+                onClick={closeMobileSidebar}
+              >
+                <BackToStudiosIcon
+                  className={`h-4 w-4 flex-shrink-0 ${sidebarCollapsed ? "lg:mr-0" : "mr-2"}`}
+                />
+                <span className={sidebarCollapsed ? "lg:sr-only" : ""}>Back to Studios</span>
+              </Link>
+            ) : null}
+
+            <div className="space-y-2">
               {nav.map((item) => {
                 const active = activeHref === item.href;
                 return (
@@ -286,7 +324,8 @@ export function AppShell({
                     key={item.href}
                     href={item.href}
                     className={`
-                      flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                      flex items-center gap-3 rounded-xl py-3 transition-all duration-200
+                      ${sidebarCollapsed ? "px-4 lg:px-2" : "px-4"}
                       ${active ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-50"}
                       ${sidebarCollapsed ? "lg:justify-center" : ""}
                     `}
@@ -302,23 +341,23 @@ export function AppShell({
               })}
             </div>
 
-            <div className="mt-8 p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-100 hidden lg:block">
-              <div className="flex items-start space-x-3 mb-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 384 512" aria-hidden>
-                    <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4C389.7 222.5 432 137.7 432 64c0-35.3-28.7-64-64-64s-64 28.7-64 64c0 35.3 28.7 64 64 64c0 0 0 0 0 0c0 0 0 0 0 0l-32 32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c-17.7 0-32 14.3-32 32s14.3 32 32 32c0 0 0 0 0 0c53 0 96 43 96 96s-43 96-96 96s-96-43-96-96c0-17.7 14.3-32 32-32s32 14.3 32 32c0 35.3-28.7 64-64 64l0 0-32-32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c0 0 0 0 0 0l32 32c0 0 0 0 0 0c35.3 0 64 28.7 64 64s-28.7 64-64 64z" />
-                  </svg>
-                </div>
-                {!sidebarCollapsed ? (
+            {!sidebarCollapsed ? (
+              <div className="mt-8 hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-purple-50 p-4 lg:block">
+                <div className="flex items-start space-x-3">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-600">
+                    <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 384 512" aria-hidden>
+                      <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4C389.7 222.5 432 137.7 432 64c0-35.3-28.7-64-64-64s-64 28.7-64 64c0 35.3 28.7 64 64 64c0 0 0 0 0 0c0 0 0 0 0 0l-32 32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c-17.7 0-32 14.3-32 32s14.3 32 32 32c0 0 0 0 0 0c53 0 96 43 96 96s-43 96-96 96s-96-43-96-96c0-17.7 14.3-32 32-32s32 14.3 32 32c0 35.3-28.7 64-64 64l0 0-32-32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c0 0 0 0 0 0l32 32c0 0 0 0 0 0c35.3 0 64 28.7 64 64s-28.7 64-64 64z" />
+                    </svg>
+                  </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Quick Tip</h4>
-                    <p className="text-xs text-gray-600 leading-relaxed">
+                    <h4 className="mb-1 font-semibold text-gray-900">Quick Tip</h4>
+                    <p className="text-xs leading-relaxed text-gray-600">
                       Use the sidebar to move between key areas of your studio.
                     </p>
                   </div>
-                ) : null}
+                </div>
               </div>
-            </div>
+            ) : null}
           </nav>
         </aside>
 
