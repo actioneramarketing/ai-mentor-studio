@@ -108,7 +108,7 @@ function BackToStudiosIcon({ className }: { className?: string }) {
   );
 }
 
-const MOCK_STUDIOS = [
+const studios = [
   { id: "1", name: "Prepared Life" },
   { id: "2", name: "Live Your List" },
   { id: "3", name: "Prepared Business" },
@@ -193,109 +193,104 @@ export function AppShell({
 
   const sidebarWidthClass = sidebarCollapsed ? "lg:w-20" : "lg:w-72";
 
-  const isStudioRoute = pathname.startsWith("/studios/") && pathname.split("/").length > 2;
+  const isStudioRoute =
+    pathname.startsWith("/studios/") && pathname.split("/").length > 2;
   const studioId = isStudioRoute ? pathname.split("/")[2] ?? null : null;
-  const currentStudio = MOCK_STUDIOS.find((s) => s.id === studioId) ?? null;
+  const currentStudio = studios.find((s) => s.id === studioId) ?? null;
   const isStudioScopedNav = isStudioScopedRoute(pathname);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex min-w-0 flex-1 items-center">
-              <div className="flex min-w-0 flex-1 items-center space-x-3">
-                <button
-                  type="button"
-                  className="flex-shrink-0 rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
-                  aria-label={navPanelExpanded ? "Collapse navigation menu" : "Expand navigation menu"}
-                  aria-expanded={navPanelExpanded}
-                  aria-controls="app-shell-sidebar"
-                  onClick={toggleSidebar}
+      <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm">
+        <div className="flex min-w-0 flex-1 items-center space-x-4">
+          <button
+            type="button"
+            className="flex-shrink-0 rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+            aria-label={navPanelExpanded ? "Collapse navigation menu" : "Expand navigation menu"}
+            aria-expanded={navPanelExpanded}
+            aria-controls="app-shell-sidebar"
+            onClick={toggleSidebar}
+          >
+            {/* fa-solid fa-bars — SVG used (Font Awesome is not bundled in this app). */}
+            <i className="fa-solid fa-bars inline-flex items-center justify-center text-lg" aria-hidden>
+              <svg className="h-[1em] w-[1em]" fill="currentColor" viewBox="0 0 448 512">
+                <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
+              </svg>
+            </i>
+          </button>
+
+          <Link href="/dashboard" className="flex h-10 flex-shrink-0 items-center">
+            <Image
+              src="/logo.png"
+              alt="AI Mentor Studio"
+              width={140}
+              height={40}
+              className="h-10 w-auto object-contain"
+              priority
+            />
+          </Link>
+
+          {!isStudioRoute ? (
+            <span className="min-w-0 truncate text-lg font-semibold text-gray-900">AI Mentor Studio</span>
+          ) : null}
+
+          {isStudioRoute && currentStudio ? (
+            <div ref={studioRef} className="relative min-w-0">
+              <button
+                type="button"
+                className="flex items-center space-x-2 rounded-lg px-3 py-2 hover:bg-gray-100"
+                aria-expanded={studioSwitcherOpen}
+                aria-haspopup="menu"
+                onClick={() => setStudioSwitcherOpen((v) => !v)}
+              >
+                <span className="min-w-0 truncate font-semibold text-gray-900">{currentStudio.name}</span>
+                <i className="fa-solid fa-chevron-down inline-flex flex-shrink-0 items-center justify-center text-sm text-gray-500" aria-hidden>
+                  <svg className="h-[1em] w-[1em]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 10l5 5 5-5z" />
+                  </svg>
+                </i>
+              </button>
+
+              {studioSwitcherOpen ? (
+                <div
+                  className="absolute left-0 z-50 mt-2 w-56 max-w-[min(14rem,calc(100vw-2rem))] rounded-xl border border-gray-200 bg-white shadow-lg"
+                  role="menu"
                 >
-                  {/* fa-solid fa-bars — SVG used (Font Awesome is not bundled in this app). */}
-                  <i className="fa-solid fa-bars inline-flex items-center justify-center text-lg" aria-hidden>
-                    <svg className="h-[1em] w-[1em]" fill="currentColor" viewBox="0 0 448 512">
-                      <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-                    </svg>
-                  </i>
-                </button>
-
-                <Link href="/dashboard" className="flex flex-shrink-0 items-center">
-                  <Image
-                    src="/logo.png"
-                    alt="AI Mentor Studio"
-                    width={32}
-                    height={32}
-                    className="object-contain"
-                    priority
-                  />
-                </Link>
-
-                {!isStudioRoute ? (
-                  <span className="min-w-0 truncate text-lg font-semibold text-gray-900 sm:max-w-none">
-                    AI Mentor Studio
-                  </span>
-                ) : null}
-
-                {isStudioRoute && currentStudio ? (
-                  <div ref={studioRef} className="relative min-w-0">
-                    <button
-                      type="button"
-                      className="flex max-w-full min-w-0 items-center space-x-2 rounded-lg px-3 py-2 hover:bg-gray-100"
-                      aria-expanded={studioSwitcherOpen}
-                      aria-haspopup="menu"
-                      onClick={() => setStudioSwitcherOpen((v) => !v)}
-                    >
-                      <span className="min-w-0 truncate font-semibold text-gray-900">{currentStudio.name}</span>
-                      <i className="fa-solid fa-chevron-down inline-flex flex-shrink-0 items-center justify-center text-sm text-gray-500" aria-hidden>
-                        <svg className="h-[1em] w-[1em]" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M7 10l5 5 5-5z" />
-                        </svg>
-                      </i>
-                    </button>
-
-                    {studioSwitcherOpen ? (
-                      <div
-                        className="absolute left-0 z-[55] mt-2 w-56 max-w-[min(14rem,calc(100vw-2rem))] rounded-xl border border-gray-200 bg-white shadow-lg"
-                        role="menu"
+                  <div className="py-2">
+                    {studios.map((studio) => (
+                      <Link
+                        key={studio.id}
+                        href={`/studios/${studio.id}`}
+                        className={`block px-4 py-2 text-sm hover:bg-gray-50 ${
+                          studio.id === studioId
+                            ? "font-semibold text-[var(--brand-accent)]"
+                            : "text-gray-700"
+                        }`}
+                        role="menuitem"
+                        onClick={() => setStudioSwitcherOpen(false)}
                       >
-                        <div className="py-2">
-                          {MOCK_STUDIOS.map((studio) => (
-                            <Link
-                              key={studio.id}
-                              href={`/studios/${studio.id}`}
-                              className={`block px-4 py-2 text-sm hover:bg-gray-50 ${
-                                studio.id === studioId
-                                  ? "font-semibold text-[var(--brand-accent)]"
-                                  : "text-gray-700"
-                              }`}
-                              role="menuitem"
-                              onClick={() => setStudioSwitcherOpen(false)}
-                            >
-                              {studio.name}
-                            </Link>
-                          ))}
-                        </div>
-
-                        <div className="border-t border-gray-200">
-                          <Link
-                            href="/studios/new"
-                            className="block px-4 py-2 text-sm text-[var(--brand-accent)] hover:bg-gray-50"
-                            role="menuitem"
-                            onClick={() => setStudioSwitcherOpen(false)}
-                          >
-                            + Create Studio
-                          </Link>
-                        </div>
-                      </div>
-                    ) : null}
+                        {studio.name}
+                      </Link>
+                    ))}
                   </div>
-                ) : null}
-              </div>
-            </div>
 
-            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+                  <div className="border-t border-gray-200">
+                    <Link
+                      href="/studios/new"
+                      className="block px-4 py-2 text-sm text-[var(--brand-accent)] hover:bg-gray-50"
+                      role="menuitem"
+                      onClick={() => setStudioSwitcherOpen(false)}
+                    >
+                      + Create Studio
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="flex flex-shrink-0 items-center space-x-2 sm:space-x-4">
               <button
                 type="button"
                 className="relative p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl transition-colors duration-200"
@@ -375,8 +370,6 @@ export function AppShell({
                   </div>
                 ) : null}
               </div>
-            </div>
-          </div>
         </div>
       </header>
 
@@ -393,7 +386,7 @@ export function AppShell({
         <aside
           id="app-shell-sidebar"
           className={`
-            fixed left-0 lg:sticky top-[73px] z-40 h-[calc(100vh-73px)] bg-white border-r border-gray-200 flex flex-col
+            fixed left-0 lg:sticky top-16 z-40 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 flex flex-col
             transition-[transform,width] duration-300 ease-out
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
             lg:translate-x-0
@@ -474,7 +467,7 @@ export function AppShell({
           </nav>
         </aside>
 
-        <div className="flex-1 min-w-0 lg:min-h-[calc(100vh-73px)]">{children}</div>
+        <div className="min-w-0 flex-1 p-6 pt-6 lg:min-h-[calc(100vh-4rem)]">{children}</div>
       </div>
     </div>
   );
