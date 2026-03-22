@@ -7,8 +7,10 @@ export default function NewMentorStep5Page() {
 
             <div className="px-4 lg:px-8 py-6 lg:py-8 max-w-7xl mx-auto">
               <div id="page-header" className="mb-8">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Create a New AI Mentor</h1>
-                <p className="text-base lg:text-lg text-gray-600">Build an AI mentor that guides users through a structured experience.</p>
+                <h1 className="text-2xl font-bold text-gray-900">Create a New AI Mentor</h1>
+                <p className="mt-1 text-base lg:text-lg text-gray-600">
+                  Build an AI mentor that guides users through a structured experience.
+                </p>
               </div>
 
               <div id="wizard-progress" className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mb-6 lg:mb-8">

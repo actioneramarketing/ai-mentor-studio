@@ -230,10 +230,6 @@ export function AppShell({
             />
           </Link>
 
-          {!isStudioRoute ? (
-            <span className="min-w-0 truncate text-lg font-semibold text-gray-900">AI Mentor Studio</span>
-          ) : null}
-
           {isStudioRoute && currentStudio ? (
             <div ref={studioRef} className="relative min-w-0">
               <button

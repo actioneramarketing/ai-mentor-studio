@@ -102,8 +102,10 @@ export default async function LeadPagesPage({
             <div id="page-header" className="mb-6 lg:mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Lead Pages</h1>
-                  <p className="text-sm lg:text-base text-gray-600">Create and manage lead capture pages that grant access to your AI mentors.</p>
+                  <h1 className="text-2xl font-bold text-gray-900">Lead Pages</h1>
+                  <p className="mt-1 text-sm lg:text-base text-gray-600">
+                    Create and manage lead capture pages that grant access to your AI mentors.
+                  </p>
                 </div>
                 <Link
                   href={`/studios/${studioId}/lead-pages/create`}

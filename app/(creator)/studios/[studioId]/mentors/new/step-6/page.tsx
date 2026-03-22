@@ -7,8 +7,10 @@ export default function NewMentorStep6Page() {
 
             <div className="px-4 lg:px-8 py-6 lg:py-8 max-w-7xl mx-auto">
               <div id="page-header" className="mb-8">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Access &amp; Visibility</h1>
-                <p className="text-base lg:text-lg text-gray-600">Control who can access this mentor and how it is shared</p>
+                <h1 className="text-2xl font-bold text-gray-900">Access &amp; Visibility</h1>
+                <p className="mt-1 text-base lg:text-lg text-gray-600">
+                  Control who can access this mentor and how it is shared
+                </p>
               </div>
 
               <div id="wizard-progress" className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mb-6 lg:mb-8">

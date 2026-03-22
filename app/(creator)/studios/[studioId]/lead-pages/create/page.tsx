@@ -13,8 +13,10 @@ export default async function CreateLeadPage({
 
           <div className="px-4 lg:px-8 py-6 lg:py-8 max-w-[1800px] mx-auto">
             <div id="page-header" className="mb-8">
-              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Create Lead Capture Page</h1>
-              <p className="text-base lg:text-lg text-gray-600">Build a landing page that captures leads and grants access to your AI mentors.</p>
+              <h1 className="text-2xl font-bold text-gray-900">Create Lead Capture Page</h1>
+              <p className="mt-1 text-base lg:text-lg text-gray-600">
+                Build a landing page that captures leads and grants access to your AI mentors.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">

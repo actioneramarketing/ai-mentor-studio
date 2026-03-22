@@ -4,8 +4,8 @@ export default function StudiosPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Your Studios</h1>
-            <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your AI studios, mentors, and audience</p>
+            <h1 className="text-2xl font-bold text-gray-900">Your Studios</h1>
+            <p className="mt-1 text-sm sm:text-base text-gray-600">Manage your AI studios, mentors, and audience</p>
           </div>
 
           <button className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md inline-flex items-center justify-center space-x-2">
