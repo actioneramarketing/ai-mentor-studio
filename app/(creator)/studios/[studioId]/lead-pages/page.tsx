@@ -95,126 +95,9 @@ export default async function LeadPagesPage({
   ]
 
   return (
-    <div className="flex min-h-screen overflow-hidden bg-gray-50 font-sans">
-      <aside
-        id="sidebar"
-        className="w-64 bg-white border-r border-gray-200 flex flex-col fixed lg:static h-full z-40 -translate-x-full lg:translate-x-0 transition-transform duration-300"
-      >
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.37 5.73zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="font-bold text-gray-900 text-sm">Prepared Life</h2>
-              <p className="text-xs text-gray-500">Workspace</p>
-            </div>
-          </div>
-        </div>
+    <div className="bg-gray-50 font-sans min-h-0">
+      <main className="flex-1 overflow-y-auto">
 
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <div className="space-y-1">
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
-              </svg>
-              <span className="text-sm font-medium">Dashboard</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8l-6-6zm4 14H4v-4h16v4zm0-5H4V8h8v5z" />
-              </svg>
-              <span className="text-sm font-medium">Workspaces</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M15.32 3.55c.42-.32 1.05-.24 1.39.19l.87 1.15-.01.01 5.25 7.1c.35.47.14 1.15-.4 1.15H15.5c-.28 0-.54-.12-.72-.33l-3.26-4.22-1.21 1.58.01.01-2.32 3.03c-.22.29-.6.48-1 .48H2.21c-.55 0-.84-.68-.5-1.14l4.26-5.67.01-.01 2.37-3.16c.2-.27.55-.43.9-.43h2.95c.31 0 .62.1.88.29l1.54 1.22z" />
-              </svg>
-              <span className="text-sm font-medium">Coach Designer</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-              </svg>
-              <span className="text-sm font-medium">Create a Coach</span>
-            </a>
-            <Link
-              href={`/studios/${studioId}/lead-pages`}
-              className="flex items-center space-x-3 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg transition-colors duration-200"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M4.5 18.75c0-1.09.68-2.03 1.64-2.42.48-.19.82-.67.82-1.2V4.5c0-.83-.67-1.5-1.5-1.5S3 3.67 3 4.5v10.83c0 .53.34 1.01.82 1.2.96.39 1.64 1.33 1.64 2.42zM9 3v10.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V3c0-.83-.67-1.5-1.5-1.5S9 2.17 9 3zm6.5 6.5V3c0-.83-.67-1.5-1.5-1.5S12.5 2.17 12.5 3v6.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5zm4.5 9.25c0 1.09-.68 2.03-1.64 2.42-.48.19-.82.67-.82 1.2V19.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-10.83c0-.53-.34-1.01-.82-1.2-.96-.39-1.64-1.33-1.64-2.42z" />
-              </svg>
-              <span className="text-sm font-semibold">Lead Pages</span>
-            </Link>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-              </svg>
-              <span className="text-sm font-medium">Site Settings</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" />
-              </svg>
-              <span className="text-sm font-medium">Instructions</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C11.93 8.43 14.07 8 16 8c.7 0 1.37.1 2 .27V12c0 2.21-1.79 4-4 4s-4-1.79-4-4H4c0 4.41 3.59 8 8 8z" />
-              </svg>
-              <span className="text-sm font-medium">Support</span>
-            </a>
-          </div>
-        </nav>
-
-        <div className="p-4 border-t border-gray-200">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-            <div className="flex items-start space-x-2 mb-2">
-              <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z" />
-              </svg>
-              <h4 className="font-semibold text-gray-900 text-sm">Quick Tip</h4>
-            </div>
-            <p className="text-xs text-gray-700 leading-relaxed">Lead pages are your fastest path to capturing qualified leads and granting instant mentor access.</p>
-          </div>
-        </div>
-      </aside>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header id="header" className="bg-white border-b border-gray-200 px-4 lg:px-8 py-4 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button type="button" id="mobile-menu-toggle" className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
-                </svg>
-              </button>
-              <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-gray-400 text-sm" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.37 5.73zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z" />
-                </svg>
-                <span className="text-sm font-medium text-gray-700">Prepared Life Workspace</span>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <button type="button" className="px-4 py-2 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition-colors duration-200 text-sm hidden sm:flex items-center space-x-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                </svg>
-                <span>Export</span>
-              </button>
-              <div className="w-9 h-9 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center cursor-pointer">
-                <span className="text-white font-semibold text-sm">JD</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main className="flex-1 overflow-y-auto">
           <div className="px-4 lg:px-8 py-6 lg:py-8 max-w-[1800px] mx-auto">
             <div id="page-header" className="mb-6 lg:mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -450,8 +333,7 @@ export default async function LeadPagesPage({
               </div>
             </div>
           </div>
-        </main>
-      </div>
+      </main>
     </div>
   )
 }

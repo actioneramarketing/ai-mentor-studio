@@ -1,65 +1,6 @@
 export default function DashboardPage() {
   return (
     <div className="bg-gray-50 font-sans">
-      {/* Icons as inline SVGs - 20x20 default */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900">AI Mentor Platform</h1>
-              <p className="text-xs text-gray-500 hidden sm:block">Creator Dashboard</p>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <button className="relative p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl transition-colors duration-200">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path d="M14 12c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C11.93 8.43 14.07 8 16 8c.7 0 1.37.1 2 .27V12c0 2.21-1.79 4-4 4s-4-1.79-4-4H4c0 4.41 3.59 8 8 8z" />
-                </svg>
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-              </button>
-              <div className="relative">
-                <button className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 rounded-xl px-2 sm:px-3 py-2 transition-colors duration-200">
-                  <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Creator" className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-200" />
-                  <div className="text-left hidden lg:block">
-                    <p className="text-sm font-semibold text-gray-900">Sarah Johnson</p>
-                    <p className="text-xs text-gray-500">Creator Account</p>
-                  </div>
-                  <svg className="w-4 h-4 text-gray-400 hidden sm:block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M7 10l5 5 5-5z" />
-                  </svg>
-                </button>
-                <div className="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2">
-                  <button className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 w-full text-left">
-                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                    </svg>
-                    <span className="text-sm text-gray-900">Profile Settings</span>
-                  </button>
-                  <button className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 w-full text-left">
-                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-                    </svg>
-                    <span className="text-sm text-gray-900">Billing & Plans</span>
-                  </button>
-                  <button className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 w-full text-left">
-                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.12-2.75l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
-                    </svg>
-                    <span className="text-sm text-gray-900">Help Center</span>
-                  </button>
-                  <div className="border-t border-gray-200 my-2" />
-                  <button className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 w-full text-left text-red-600">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
-                    </svg>
-                    <span className="text-sm font-medium">Logout</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Studio Selection Modal - hidden by default */}
       <div className="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" aria-hidden>
         <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
