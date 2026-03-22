@@ -219,13 +219,13 @@ export function AppShell({
             </i>
           </button>
 
-          <Link href="/dashboard" className="flex h-10 flex-shrink-0 items-center">
+          <Link href="/dashboard" className="flex h-12 flex-shrink-0 items-center">
             <Image
-              src="/logo.png"
+              src="/logo-main.png"
               alt="AI Mentor Studio"
-              width={140}
-              height={40}
-              className="h-10 w-auto object-contain"
+              width={200}
+              height={60}
+              className="h-10 w-auto max-w-[180px] object-contain"
               priority
             />
           </Link>
