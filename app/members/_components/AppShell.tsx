@@ -107,6 +107,18 @@ function BackToStudiosIcon({ className }: { className?: string }) {
   );
 }
 
+function useIsLg() {
+  const [isLg, setIsLg] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsLg(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isLg;
+}
+
 export function AppShell({
   children,
   userProfile,
@@ -128,6 +140,17 @@ export function AppShell({
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const closeMobileSidebar = useCallback(() => setSidebarOpen(false), []);
+
+  const toggleSidebar = useCallback(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) {
+      setSidebarCollapsed((c) => !c);
+    } else {
+      setSidebarOpen((o) => !o);
+    }
+  }, []);
+
+  const isLg = useIsLg();
+  const navPanelExpanded = isLg ? !sidebarCollapsed : sidebarOpen;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -152,16 +175,21 @@ export function AppShell({
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex min-w-0 items-center space-x-4">
               <button
                 type="button"
-                className="lg:hidden p-2.5 hover:bg-gray-100 rounded-xl transition-colors duration-200"
-                aria-label="Open navigation menu"
-                onClick={() => setSidebarOpen(true)}
+                className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+                aria-label={navPanelExpanded ? "Collapse navigation menu" : "Expand navigation menu"}
+                aria-expanded={navPanelExpanded}
+                aria-controls="app-shell-sidebar"
+                onClick={toggleSidebar}
               >
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
-                  <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-                </svg>
+                {/* fa-solid fa-bars — SVG used (Font Awesome is not bundled in this app). */}
+                <i className="fa-solid fa-bars text-lg inline-flex items-center justify-center" aria-hidden>
+                  <svg className="h-[1em] w-[1em]" fill="currentColor" viewBox="0 0 448 512">
+                    <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
+                  </svg>
+                </i>
               </button>
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
@@ -267,6 +295,7 @@ export function AppShell({
         ) : null}
 
         <aside
+          id="app-shell-sidebar"
           className={`
             fixed left-0 lg:sticky top-[73px] z-40 h-[calc(100vh-73px)] bg-white border-r border-gray-200 flex flex-col
             transition-[transform,width] duration-300 ease-out
@@ -276,25 +305,13 @@ export function AppShell({
             w-72 max-w-[85vw] lg:max-w-none
           `}
         >
-          <div
-            className={`border-b border-gray-100 hidden lg:flex ${sidebarCollapsed ? "items-center justify-center px-2 py-2" : "items-center justify-between gap-2 px-3 py-2"}`}
-          >
-            {!sidebarCollapsed ? (
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide truncate px-1">
+          {!sidebarCollapsed ? (
+            <div className="hidden border-b border-gray-100 px-3 py-2 lg:flex">
+              <span className="truncate px-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
                 Navigation
               </span>
-            ) : null}
-            <button
-              type="button"
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 flex-shrink-0"
-              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              onClick={() => setSidebarCollapsed((c) => !c)}
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
-                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-              </svg>
-            </button>
-          </div>
+            </div>
+          ) : null}
 
           <nav className="flex-1 overflow-y-auto p-4">
             {isStudioRoute ? (
