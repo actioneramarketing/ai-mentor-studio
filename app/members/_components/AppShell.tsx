@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   type ReactNode,
@@ -202,11 +203,11 @@ export function AppShell({
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex min-w-0 flex-1 items-center space-x-4">
-              <div className="flex min-w-0 items-center space-x-4">
+            <div className="flex min-w-0 flex-1 items-center">
+              <div className="flex min-w-0 flex-1 items-center space-x-3">
                 <button
                   type="button"
-                  className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+                  className="flex-shrink-0 rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
                   aria-label={navPanelExpanded ? "Collapse navigation menu" : "Expand navigation menu"}
                   aria-expanded={navPanelExpanded}
                   aria-controls="app-shell-sidebar"
@@ -220,10 +221,21 @@ export function AppShell({
                   </i>
                 </button>
 
+                <Link href="/dashboard" className="flex flex-shrink-0 items-center">
+                  <Image
+                    src="/logo.png"
+                    alt="AI Mentor Studio"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                    priority
+                  />
+                </Link>
+
                 {!isStudioRoute ? (
-                  <Link href="/dashboard" className="truncate text-xl font-bold text-gray-900">
+                  <span className="min-w-0 truncate text-lg font-semibold text-gray-900 sm:max-w-none">
                     AI Mentor Studio
-                  </Link>
+                  </span>
                 ) : null}
 
                 {isStudioRoute && currentStudio ? (
