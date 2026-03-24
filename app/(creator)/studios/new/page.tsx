@@ -1,24 +1,4 @@
-import Link from "next/link"
-import { redirect } from "next/navigation"
-import { createSupabaseServer } from "@/lib/db"
-
-async function createStudio(formData: FormData) {
-  "use server"
-
-  const name = formData.get("name") as string
-  const slug = formData.get("slug") as string
-  const description = (formData.get("description") as string) || ""
-
-  const supabase = createSupabaseServer()
-  const { data, error } = await supabase
-    .from("studios")
-    .insert({ name, slug, description })
-    .select()
-    .single()
-
-  if (error) throw error
-  redirect(`/studios/${data.id}/settings`)
-}
+import { NewStudioFormActions } from "./new-studio-form-actions"
 
 export default function NewStudioPage() {
   return (
@@ -33,7 +13,7 @@ export default function NewStudioPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-              <form action={createStudio} className="lg:col-span-2 space-y-6 block">
+              <form className="lg:col-span-2 space-y-6 block">
                 <div id="workspace-basics-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
                   <div className="flex items-center space-x-3 mb-6">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -122,17 +102,7 @@ export default function NewStudioPage() {
                   </div>
                 </div>
 
-                <div id="action-buttons" className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
-                  <Link href="/studios" className="px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200 order-2 sm:order-1 text-center">
-                    Cancel
-                  </Link>
-                  <button type="submit" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center space-x-2 order-1 sm:order-2 flex-1 sm:flex-initial">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                    </svg>
-                    <span>Create Studio</span>
-                  </button>
-                </div>
+                <NewStudioFormActions />
               </form>
 
               <div className="lg:col-span-1">
