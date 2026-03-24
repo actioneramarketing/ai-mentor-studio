@@ -1,6 +1,13 @@
 "use client"
 
+import { useParams, useRouter } from "next/navigation"
+import { MentorWizardProgress } from "../mentor-wizard-progress"
+
 export default function NewMentorStep3Page() {
+  const params = useParams()
+  const studioId = String(params.studioId ?? "")
+  const router = useRouter()
+
   return (
     <div className="bg-gray-50 font-sans">
       <main className="flex-1 overflow-y-auto">
@@ -13,54 +20,7 @@ export default function NewMentorStep3Page() {
                 </p>
               </div>
 
-              <div id="wizard-progress" className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mb-6 lg:mb-8">
-                <div className="flex items-center justify-between overflow-x-auto pb-2">
-                  <div className="flex items-center space-x-2 lg:space-x-4 min-w-max">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm lg:text-base flex-shrink-0">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                      </div>
-                      <span className="font-medium text-gray-600 text-sm lg:text-base whitespace-nowrap">Basics</span>
-                    </div>
-                    <div className="w-8 lg:w-12 h-0.5 bg-green-500" />
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm lg:text-base flex-shrink-0">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                      </div>
-                      <span className="font-medium text-gray-600 text-sm lg:text-base whitespace-nowrap">Instructions</span>
-                    </div>
-                    <div className="w-8 lg:w-12 h-0.5 bg-blue-500" />
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm lg:text-base flex-shrink-0">3</div>
-                      <span className="font-semibold text-gray-900 text-sm lg:text-base whitespace-nowrap hidden lg:inline">Conversation Starters</span>
-                      <span className="font-semibold text-gray-900 text-sm lg:text-base whitespace-nowrap lg:hidden">Starters</span>
-                    </div>
-                    <div className="w-8 lg:w-12 h-0.5 bg-gray-200" />
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-sm lg:text-base flex-shrink-0">4</div>
-                      <span className="font-medium text-gray-500 text-sm lg:text-base whitespace-nowrap hidden lg:inline">Mentor Steps</span>
-                      <span className="font-medium text-gray-500 text-sm lg:text-base whitespace-nowrap lg:hidden">Steps</span>
-                    </div>
-                    <div className="w-8 lg:w-12 h-0.5 bg-gray-200" />
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-sm lg:text-base flex-shrink-0">5</div>
-                      <span className="font-medium text-gray-500 text-sm lg:text-base whitespace-nowrap">Call To Action</span>
-                    </div>
-                    <div className="w-8 lg:w-12 h-0.5 bg-gray-200" />
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-sm lg:text-base flex-shrink-0">6</div>
-                      <span className="font-medium text-gray-500 text-sm lg:text-base whitespace-nowrap hidden lg:inline">Access &amp; Visibility</span>
-                      <span className="font-medium text-gray-500 text-sm lg:text-base whitespace-nowrap lg:hidden">Access</span>
-                    </div>
-                    <div className="w-8 lg:w-12 h-0.5 bg-gray-200" />
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-sm lg:text-base flex-shrink-0">7</div>
-                      <span className="font-medium text-gray-500 text-sm lg:text-base whitespace-nowrap hidden lg:inline">Preview &amp; Publish</span>
-                      <span className="font-medium text-gray-500 text-sm lg:text-base whitespace-nowrap lg:hidden">Publish</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <MentorWizardProgress currentStep={3} />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                 <div className="lg:col-span-2 space-y-6">
@@ -359,7 +319,11 @@ export default function NewMentorStep3Page() {
                       <span className="hidden sm:inline">Back to Instructions</span>
                       <span className="sm:hidden">Back</span>
                     </button>
-                    <button type="button" className="px-6 lg:px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2">
+                    <button
+                      type="button"
+                      className="px-6 lg:px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2"
+                      onClick={() => router.push(`/studios/${studioId}/mentors/new/step-4`)}
+                    >
                       <span className="hidden sm:inline">Continue to Mentor Steps</span>
                       <span className="sm:inline lg:hidden">Continue</span>
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" /></svg>
