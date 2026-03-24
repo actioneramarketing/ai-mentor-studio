@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function StudiosPage() {
   return (
     <div className="bg-gray-50 font-sans">
@@ -8,12 +10,15 @@ export default function StudiosPage() {
             <p className="mt-1 text-sm sm:text-base text-gray-600">Manage your AI studios, mentors, and audience</p>
           </div>
 
-          <button className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md inline-flex items-center justify-center space-x-2">
+          <Link
+            href="/studios/new"
+            className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md inline-flex items-center justify-center space-x-2"
+          >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
             </svg>
             <span>Create Studio</span>
-          </button>
+          </Link>
         </div>
         <div className="hidden">
           <div className="max-w-2xl mx-auto">
