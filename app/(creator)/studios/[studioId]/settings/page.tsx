@@ -1,9 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { Suspense, use, useMemo } from "react"
+import { Suspense, use, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
+import {
+  AISetupInstructionsModal,
+  type AISetupProvider,
+} from "@/components/ai-config/AISetupInstructionsModal"
 import { StudioPagesTab } from "@/components/studio-pages/StudioPagesTab"
 
 const tabs = [
@@ -75,6 +79,9 @@ function StudioSettingsPageInner({
   const { studioId } = use(params)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [aiSetupModal, setAiSetupModal] = useState<AISetupProvider | null>(
+    null,
+  )
 
   const activeTab = useMemo((): SettingsTabKey => {
     const tabParam = searchParams.get("tab")
@@ -91,6 +98,9 @@ function StudioSettingsPageInner({
     }
     router.replace(`/studios/${studioId}/settings?tab=${tabKey}`)
   }
+
+  const hidePreviewPanel =
+    activeTab === "studio-pages" || activeTab === "ai"
 
   return (
     <div className="bg-gray-50 font-sans min-h-0">
@@ -120,8 +130,8 @@ function StudioSettingsPageInner({
               </div>
             </div>
 
-            <div className={activeTab === "studio-pages" ? "grid grid-cols-1 gap-6 lg:gap-8" : "grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"}>
-              <div className={`space-y-6 ${activeTab === "studio-pages" ? "" : "lg:col-span-2"}`}>
+            <div className={hidePreviewPanel ? "grid grid-cols-1 gap-6 lg:gap-8" : "grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"}>
+              <div className={`space-y-6 ${hidePreviewPanel ? "" : "lg:col-span-2"}`}>
                 {activeTab === "general" && (
                 <div id="general-tab" className="tab-content">
                   <div id="workspace-basics-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm mb-6">
@@ -294,92 +304,112 @@ function StudioSettingsPageInner({
 
                 {activeTab === "ai" && (
                 <div id="ai-tab" className="tab-content">
-                  <div id="ai-provider-section" className="bg-white rounded-2xl border-2 border-blue-200 p-6 sm:p-8 shadow-sm bg-gradient-to-br from-blue-50 to-white">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900">AI Configuration</h3>
+                  <div className="max-w-4xl mx-auto w-full space-y-6">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">AI Configuration</h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Configure the AI provider that powers your mentors. Add a key for each provider you want to use—default models are chosen for you.
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600 mb-6">Configure the AI provider that powers your mentors.</p>
 
-                    <div className="space-y-5">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-3">AI Provider</label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <label className="relative cursor-pointer">
-                            <input type="radio" name="provider" value="UX Pilot AI" className="peer sr-only" defaultChecked />
-                            <div className="p-5 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-white transition-all duration-200 hover:border-gray-300">
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-                                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                                    <path d="M20 9V7c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v2c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h2c0 1.1.9 2 2 2v2h8v-2c1.1 0 2-.9 2-2h2c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2zm-2 0H6V7h12v2zm-4 6v-2h-4v2h4z" />
-                                  </svg>
-                                </div>
-                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 flex items-center justify-center" />
-                              </div>
-                              <h4 className="font-semibold text-gray-900 mb-1">UX Pilot AI</h4>
-                              <p className="text-xs text-gray-600">GPT-4 and GPT-3.5</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="flex min-w-0 items-start gap-3">
+                            <div className="w-10 h-10 shrink-0 rounded-lg bg-gray-900 flex items-center justify-center">
+                              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                <path d="M20 9V7c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v2c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h2c0 1.1.9 2 2 2v2h8v-2c1.1 0 2-.9 2-2h2c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2zm-2 0H6V7h12v2zm-4 6v-2h-4v2h4z" />
+                              </svg>
                             </div>
-                          </label>
-
-                          <label className="relative cursor-pointer">
-                            <input type="radio" name="provider" value="UX Pilot" className="peer sr-only" />
-                            <div className="p-5 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-white transition-all duration-200 hover:border-gray-300">
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-                                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6l-2 2V4h16v10z" />
-                                  </svg>
-                                </div>
-                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 flex items-center justify-center" />
-                              </div>
-                              <h4 className="font-semibold text-gray-900 mb-1">UX Pilot</h4>
-                              <p className="text-xs text-gray-600">UX Pilot AI AI</p>
+                            <div className="min-w-0">
+                              <h4 className="font-semibold text-gray-900">OpenAI (ChatGPT)</h4>
+                              <p className="text-sm text-gray-600 mt-0.5">High-quality dialogue for mentor-style coaching.</p>
                             </div>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">API Key</label>
-                        <div className="relative">
-                          <input type="password" defaultValue="sk-proj-xxxxxxxxxxxxxxxxxxxx" className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900" />
-                          <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                            </svg>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setAiSetupModal("openai")}
+                            className="shrink-0 text-left text-sm font-semibold text-blue-600 hover:text-blue-700 sm:text-right"
+                          >
+                            View Setup Instructions
                           </button>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">Your API key is encrypted and stored securely.</p>
-                      </div>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">Default Model</label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 bg-white" defaultValue="GPT-4o">
-                          <option>GPT-4o</option>
-                          <option>GPT-4o Mini</option>
-                          <option>GPT-4 Turbo</option>
-                          <option>GPT-3.5 Turbo</option>
-                        </select>
-                      </div>
-
-                      <button type="button" className="w-full sm:w-auto px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-200 inline-flex items-center justify-center space-x-2">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                          <path d="M4 20h16v-8H4v8zm0-12h16V4H4v4z" />
-                        </svg>
-                        <span>Test Connection</span>
-                      </button>
-
-                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                        <div className="flex items-start space-x-3">
-                          <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                          </svg>
-                          <p className="text-xs text-gray-700 leading-relaxed">Your API key is used to power your mentors. You will be billed directly by your provider based on usage.</p>
+                        <div>
+                          <label htmlFor="openai-api-key" className="block text-sm font-semibold text-gray-900 mb-2">API Key</label>
+                          <div className="relative">
+                            <input id="openai-api-key" type="password" defaultValue="sk-proj-xxxxxxxxxxxxxxxxxxxx" className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900" placeholder="sk-..." />
+                            <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label="Toggle visibility">
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                              </svg>
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">Your API key is encrypted and stored securely.</p>
+                          <p className="text-sm text-gray-500 mt-2">Default model: GPT-4o (optimized for mentor conversations)</p>
                         </div>
+
+                        <button type="button" className="mt-auto w-full px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-200 inline-flex items-center justify-center gap-2">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                            <path d="M4 20h16v-8H4v8zm0-12h16V4H4v4z" />
+                          </svg>
+                          <span>Test Connection</span>
+                        </button>
+                      </div>
+
+                      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="flex min-w-0 items-start gap-3">
+                            <div className="w-10 h-10 shrink-0 rounded-lg bg-orange-500 flex items-center justify-center">
+                              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6l-2 2V4h16v10z" />
+                              </svg>
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="font-semibold text-gray-900">Anthropic (Claude)</h4>
+                              <p className="text-sm text-gray-600 mt-0.5">Strong reasoning for thoughtful guidance and structured help.</p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setAiSetupModal("anthropic")}
+                            className="shrink-0 text-left text-sm font-semibold text-blue-600 hover:text-blue-700 sm:text-right"
+                          >
+                            View Setup Instructions
+                          </button>
+                        </div>
+
+                        <div>
+                          <label htmlFor="anthropic-api-key" className="block text-sm font-semibold text-gray-900 mb-2">API Key</label>
+                          <div className="relative">
+                            <input id="anthropic-api-key" type="password" defaultValue="sk-ant-api03-xxxxxxxxxxxx" className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900" placeholder="sk-ant-..." />
+                            <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label="Toggle visibility">
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                              </svg>
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">Your API key is encrypted and stored securely.</p>
+                          <p className="text-sm text-gray-500 mt-2">Default model: Claude 3.5 Sonnet (optimized for reasoning and guidance)</p>
+                        </div>
+
+                        <button type="button" className="mt-auto w-full px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-200 inline-flex items-center justify-center gap-2">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                            <path d="M4 20h16v-8H4v8zm0-12h16V4H4v4z" />
+                          </svg>
+                          <span>Test Connection</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                      <div className="flex items-start gap-3">
+                        <svg className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                        </svg>
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          Your API keys power your mentors. Usage is billed directly by OpenAI or Anthropic based on your account.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -635,7 +665,7 @@ function StudioSettingsPageInner({
                 ) : null}
               </div>
 
-              {activeTab !== "studio-pages" ? (
+              {!hidePreviewPanel ? (
               <div className="lg:col-span-1">
                 <div className="sticky top-24">
                   <div id="preview-panel" className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
@@ -728,6 +758,13 @@ function StudioSettingsPageInner({
             </div>
           </div>
       </main>
+      {aiSetupModal !== null ? (
+        <AISetupInstructionsModal
+          provider={aiSetupModal}
+          open
+          onClose={() => setAiSetupModal(null)}
+        />
+      ) : null}
     </div>
   )
 }
