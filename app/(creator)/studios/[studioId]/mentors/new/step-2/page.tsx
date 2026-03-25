@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { MentorWizardProgress } from "../mentor-wizard-progress"
 
@@ -89,15 +89,151 @@ function blankStep(): FlowStep {
   }
 }
 
+const FLOW_DEFAULTS = {
+  outcome: "",
+  audience: "",
+  transformation: "",
+  extra: "",
+}
+
+function stepShell(
+  partial: Pick<FlowStep, "title" | "subtitle" | "goal" | "aiInstructions" | "questions"> & {
+    id?: string
+    completionRule?: string
+    allowSkip?: boolean
+    generateSummary?: boolean
+  }
+): FlowStep {
+  return {
+    id: partial.id ?? createId(),
+    title: partial.title,
+    subtitle: partial.subtitle,
+    goal: partial.goal,
+    aiInstructions: partial.aiInstructions,
+    questions: partial.questions,
+    completionRule: partial.completionRule ?? "AI decides when the step is complete",
+    allowSkip: partial.allowSkip ?? false,
+    generateSummary: partial.generateSummary ?? true,
+  }
+}
+
+/** Mock AI: full flow from modal answers (3–5 steps). */
+function mockGenerateMentorFlow(input: typeof FLOW_DEFAULTS): FlowStep[] {
+  const outcome = input.outcome.trim() || "reach a clear, practical outcome"
+  const audience = input.audience.trim() || "people you serve"
+  const transformation = input.transformation.trim() || "feel guided and confident"
+  const extra = input.extra.trim()
+  const ctx = extra ? ` ${extra}` : ""
+
+  const templates: Parameters<typeof stepShell>[0][] = [
+    {
+      title: "Set context",
+      subtitle: "Understand where they are today",
+      goal: `Learn enough about ${audience} to personalize guidance toward: ${outcome}.`,
+      aiInstructions: `Welcome ${audience}. Ask one or two open questions about their current situation and what “done” means for them. Keep tone supportive and concise.${ctx}`,
+      questions: [
+        `What prompted you to start working on ${outcome.split(",")[0]?.slice(0, 60) || "this"} today?`,
+        "What would success look like at the end of this session?",
+        "Is there anything I should know about your constraints or timeline?",
+      ],
+    },
+    {
+      title: "Explore options",
+      subtitle: "Surface what matters most",
+      goal: `Help ${audience} compare paths or priorities so they can move toward ${outcome}.`,
+      aiInstructions: `Reflect back what you heard. Offer 2–3 structured prompts to clarify tradeoffs. Encourage honest answers; avoid overwhelming lists.${ctx}`,
+      questions: [
+        "Which option feels closest to what you need right now?",
+        "What would you rule out after thinking it through?",
+        "What support or resources do you already have?",
+      ],
+    },
+    {
+      title: "Commit to a plan",
+      subtitle: "Turn insight into next steps",
+      goal: `Co-create a short plan so the user experiences ${transformation}.`,
+      aiInstructions: `Summarize themes from earlier messages. Propose a minimal next step, then ask for their tweak. Confirm buy-in before closing the step.${ctx}`,
+      questions: [
+        "What is the smallest step you will take in the next 24–48 hours?",
+        "What might get in the way, and how will you handle it?",
+      ],
+    },
+    {
+      title: "Reflect and adjust",
+      subtitle: "Lock in learning",
+      goal: `Reinforce progress toward ${outcome} and capture one adjustment if needed.`,
+      aiInstructions: `Celebrate specific progress. Ask what surprised them. Offer optional refinement of the plan if energy is low or blockers appeared.${ctx}`,
+      questions: [
+        "What’s the clearest takeaway for you from this step?",
+        "Would you like to tweak your plan before moving on?",
+      ],
+    },
+    {
+      title: "Prepare for what’s next",
+      subtitle: "Close the loop",
+      goal: `Leave ${audience} ready to continue toward ${outcome} beyond this mentor.`,
+      aiInstructions: `Give a brief recap bullet-style. Point to one habit or check-in. Invite them to return when context changes.${ctx}`,
+      questions: [
+        "When will you revisit this plan?",
+        "Who (if anyone) should know about your next step?",
+      ],
+    },
+  ]
+
+  const count = 3 + (Math.abs(outcome.length + audience.length) % 3)
+  return templates.slice(0, count).map((t) => stepShell(t))
+}
+
+/** Mock AI: step-level content from name + goal. */
+function mockGenerateStepContent(title: string, goal: string): Pick<FlowStep, "aiInstructions" | "questions"> {
+  const t = title.trim() || "this step"
+  const g = goal.trim() || "make meaningful progress"
+  return {
+    aiInstructions: `Lead the user through "${t}" with empathy. Start by restating their objective in plain language (${g}). Ask concise follow-ups only when needed. Tie each reply back to the step goal and offer one concrete suggestion when appropriate.`,
+    questions: [
+      `What part of "${t}" feels unclear or stressful right now?`,
+      `What would help you feel ready to move forward on: ${g.slice(0, 80)}${g.length > 80 ? "…" : ""}?`,
+      "Is there anything you want to change about your plan before we continue?",
+    ],
+  }
+}
+
+function buildSimulatedOpening(step: FlowStep): string {
+  const title = step.title.trim() || "this step"
+  const goal = step.goal.trim()
+  const ins = step.aiInstructions.trim()
+  const parts: string[] = []
+  parts.push(`Let’s start with ${title}.`)
+  if (goal) parts.push(goal)
+  else parts.push("I’ll guide you with a few focused questions so we can move forward together.")
+  if (ins) {
+    const snippet = ins.slice(0, 260).trim()
+    if (snippet) parts.push(snippet.endsWith(".") ? snippet : `${snippet}.`)
+  }
+  return parts.join(" ")
+}
+
 export default function NewMentorStep2Page() {
   const params = useParams()
   const studioId = String(params.studioId ?? "")
   const router = useRouter()
   const editorRef = useRef<HTMLDivElement>(null)
+  const stepTitleInputRef = useRef<HTMLInputElement>(null)
 
   const [steps, setSteps] = useState<FlowStep[]>(INITIAL_STEPS)
   const [selectedId, setSelectedId] = useState<string>(INITIAL_STEPS[0]?.id ?? "")
   const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [flowModalOpen, setFlowModalOpen] = useState(false)
+  const [flowForm, setFlowForm] = useState({ ...FLOW_DEFAULTS })
+
+  useEffect(() => {
+    if (!flowModalOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFlowModalOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [flowModalOpen])
 
   const selected = useMemo(() => steps.find((s) => s.id === selectedId) ?? steps[0], [steps, selectedId])
   const selectedIndex = useMemo(() => {
@@ -128,7 +264,24 @@ export default function NewMentorStep2Page() {
     setSteps((prev) => [...prev, next])
     setSelectedId(next.id)
     scrollToEditor()
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => stepTitleInputRef.current?.focus())
+    })
   }, [scrollToEditor])
+
+  const applyMockFlow = useCallback(() => {
+    const generated = mockGenerateMentorFlow(flowForm)
+    setSteps(generated)
+    setSelectedId(generated[0]?.id ?? "")
+    setFlowModalOpen(false)
+    setFlowForm({ ...FLOW_DEFAULTS })
+  }, [flowForm])
+
+  const generateStepContent = useCallback(() => {
+    if (!selected) return
+    const { aiInstructions, questions } = mockGenerateStepContent(selected.title, selected.goal)
+    patchStep(selected.id, { aiInstructions, questions })
+  }, [selected, patchStep])
 
   const duplicateStep = useCallback(
     (id: string) => {
@@ -184,6 +337,7 @@ export default function NewMentorStep2Page() {
   }, [])
 
   const activePreview = selected ?? steps[0]
+  const simulatedOpening = useMemo(() => buildSimulatedOpening(activePreview), [activePreview])
 
   return (
     <div className="bg-gray-50 font-sans">
@@ -198,8 +352,8 @@ export default function NewMentorStep2Page() {
 
           <MentorWizardProgress currentStep={2} />
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
-            <div className="space-y-6 lg:col-span-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="space-y-6">
               <div
                 id="mentor-steps-form"
                 className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:p-8"
@@ -215,6 +369,7 @@ export default function NewMentorStep2Page() {
                     <button
                       type="button"
                       id="generate-flow-btn"
+                      onClick={() => setFlowModalOpen(true)}
                       className="flex items-center space-x-2 rounded-lg border-2 border-blue-600 bg-white px-4 py-2.5 font-semibold text-blue-600 shadow-sm transition-colors duration-200 hover:bg-blue-50 hover:shadow-md"
                     >
                       <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
@@ -264,7 +419,7 @@ export default function NewMentorStep2Page() {
                         }}
                         className={`step-card cursor-pointer rounded-xl border-2 p-4 transition-colors duration-200 ${
                           isActive
-                            ? "border-blue-300 bg-blue-50 hover:border-blue-400"
+                            ? "border-blue-500 bg-blue-50 shadow-sm ring-2 ring-blue-200 hover:border-blue-600"
                             : "border-gray-200 bg-gray-50 hover:border-blue-300"
                         }`}
                       >
@@ -379,7 +534,9 @@ export default function NewMentorStep2Page() {
                   </div>
                 </div>
               </div>
+            </div>
 
+            <div className="min-w-0 space-y-6">
               {selected ? (
                 <div
                   ref={editorRef}
@@ -395,6 +552,7 @@ export default function NewMentorStep2Page() {
                       <button
                         type="button"
                         id="generate-step-content-btn"
+                        onClick={generateStepContent}
                         className="flex items-center space-x-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-md transition-all duration-200 hover:from-purple-600 hover:to-blue-600 hover:shadow-lg"
                       >
                         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
@@ -415,6 +573,7 @@ export default function NewMentorStep2Page() {
                         Step Name <span className="text-red-500">*</span>
                       </label>
                       <input
+                        ref={stepTitleInputRef}
                         type="text"
                         value={selected.title}
                         onChange={(e) => patchStep(selected.id, { title: e.target.value })}
@@ -602,101 +761,173 @@ export default function NewMentorStep2Page() {
               </div>
             </div>
 
-            <div className="lg:col-span-1">
+            <div className="space-y-6">
               <div className="sticky top-6">
-                <div id="preview-panel" className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-gray-900">Live Preview</h3>
-                    <span className="text-xs text-gray-500">User view</span>
+                <div
+                  id="preview-panel"
+                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100"
+                >
+                  <div className="mb-4 flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-bold text-gray-900">Live Simulation</h3>
+                    <span className="shrink-0 text-xs text-gray-500">Selected step</span>
                   </div>
 
-                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                    <div className="overflow-hidden rounded-lg bg-white shadow-md">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                    <div className="overflow-hidden rounded-xl bg-white shadow-md ring-1 ring-gray-100">
                       <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3">
-                        <div className="flex items-center space-x-2">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white">
                             {selectedIndex + 1}
                           </div>
-                          <span className="text-sm font-semibold text-white">
+                          <span className="truncate text-sm font-semibold text-white">
                             Step {selectedIndex + 1} of {steps.length}
                           </span>
                         </div>
                       </div>
 
-                      <div className="p-5">
-                        <h3 className="mb-3 text-base font-bold text-gray-900">
+                      <div className="max-h-[min(420px,55vh)] space-y-4 overflow-y-auto p-4">
+                        <h3 className="text-base font-bold text-gray-900">
                           {activePreview.title.trim() || "Untitled step"}
                         </h3>
 
-                        <div className="space-y-3">
-                          <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-                            <div className="flex items-start space-x-2">
-                              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600">
-                                <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
-                                  <path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0A56 56 0 1 1 168 256zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" />
-                                </svg>
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm leading-relaxed text-gray-900">
-                                  {activePreview.goal.trim() ||
-                                    "Your mentor introduces this step and guides the user through it."}
-                                </p>
-                              </div>
-                            </div>
+                        <div>
+                          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                            AI
+                          </p>
+                          <div className="rounded-xl rounded-tl-md border border-blue-100 bg-blue-50 px-3 py-2.5 shadow-sm">
+                            <p className="text-sm leading-relaxed text-gray-900">{simulatedOpening}</p>
                           </div>
-
-                          {activePreview.questions[0] ? (
-                            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-                              <div className="flex items-start space-x-2">
-                                <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600">
-                                  <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
-                                    <path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0A56 56 0 1 1 168 256zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" />
-                                  </svg>
-                                </div>
-                                <div className="flex-1">
-                                  <p className="text-sm font-semibold text-gray-900">{activePreview.questions[0]}</p>
-                                </div>
-                              </div>
-                            </div>
-                          ) : null}
                         </div>
 
-                        <div className="mt-4 border-t border-gray-200 pt-4">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="text"
-                              placeholder="Type your response..."
-                              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none"
-                              readOnly
-                            />
-                            <button
-                              type="button"
-                              className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
-                            >
-                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
-                                <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.8 12.5-11.4 22.4-23.9 25.4c-4.7 1-9.4 1.4-14.1 1.4c-4.4 0-8.8-.4-13.1-1.2l-3.4-.7-56.2 90.3c-8.4 13.5-24.6 21.5-41.7 21.5H192c-8.5 0-16.8-2.7-24.2-7.6L96 480 16 352 128 224l96 64 288-320L498.1 5.6z" />
-                              </svg>
-                            </button>
+                        <div>
+                          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                            User
+                          </p>
+                          <div className="flex flex-col gap-2">
+                            {activePreview.questions.filter((q) => q.trim()).length === 0 ? (
+                              <p className="text-xs text-gray-500">Add suggested questions to see tap options here.</p>
+                            ) : (
+                              activePreview.questions
+                                .map((q) => q.trim())
+                                .filter(Boolean)
+                                .map((q, qi) => (
+                                  <button
+                                    key={`${activePreview.id}-sim-q-${qi}`}
+                                    type="button"
+                                    className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-xs font-medium text-gray-800 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/80"
+                                  >
+                                    {q}
+                                  </button>
+                                ))
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-6 rounded-lg border border-blue-100 bg-blue-50 p-4">
-                    <div className="flex items-start space-x-2">
-                      <svg className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
-                        <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zM192 176a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
-                      </svg>
-                      <p className="text-xs leading-relaxed text-gray-700">
-                        This preview reflects the step you have selected in the list.
-                      </p>
-                    </div>
-                  </div>
+                  <p className="mt-4 text-xs leading-relaxed text-gray-600">
+                    This simulates how your mentor will guide users during this step.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+
+          {flowModalOpen ? (
+            <div
+              className="fixed inset-0 z-50 flex min-h-0 items-center justify-center p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="flow-modal-title"
+            >
+              <button
+                type="button"
+                className="absolute inset-0 bg-black/45"
+                aria-label="Close dialog"
+                onClick={() => setFlowModalOpen(false)}
+              />
+              <div
+                className="relative z-10 max-h-[min(90vh,640px)] w-full max-w-lg overflow-y-auto rounded-xl border border-gray-200 bg-white p-6 shadow-xl ring-1 ring-gray-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 id="flow-modal-title" className="text-lg font-bold text-gray-900">
+                  Generate Mentor Flow
+                </h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  Describe your mentor—we&apos;ll draft a flow you can refine (demo: mock data).
+                </p>
+
+                <div className="mt-5 space-y-4">
+                  <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-900">
+                      What outcome should this mentor help achieve?
+                    </label>
+                    <textarea
+                      value={flowForm.outcome}
+                      onChange={(e) => setFlowForm((f) => ({ ...f, outcome: e.target.value }))}
+                      rows={3}
+                      className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      placeholder="e.g. Build a personalized 72-hour emergency kit"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-900">
+                      Who is this mentor for?
+                    </label>
+                    <input
+                      type="text"
+                      value={flowForm.audience}
+                      onChange={(e) => setFlowForm((f) => ({ ...f, audience: e.target.value }))}
+                      className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      placeholder="e.g. Families new to emergency planning"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-900">
+                      What transformation should the user experience?
+                    </label>
+                    <textarea
+                      value={flowForm.transformation}
+                      onChange={(e) => setFlowForm((f) => ({ ...f, transformation: e.target.value }))}
+                      rows={3}
+                      className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      placeholder="e.g. From overwhelmed to confident with a concrete checklist"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-900">
+                      Optional: Additional context
+                    </label>
+                    <textarea
+                      value={flowForm.extra}
+                      onChange={(e) => setFlowForm((f) => ({ ...f, extra: e.target.value }))}
+                      rows={2}
+                      className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      placeholder="Tone, constraints, industry, etc."
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-gray-100 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setFlowModalOpen(false)}
+                    className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyMockFlow}
+                    className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                  >
+                    Generate
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           <div
             id="wizard-navigation"
