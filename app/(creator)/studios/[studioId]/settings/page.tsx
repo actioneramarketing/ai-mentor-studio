@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { use, useState } from "react"
 
+import { StudioPagesTab } from "@/components/studio-pages/StudioPagesTab"
+
 export default function StudioSettingsPage({
   params,
 }: {
@@ -42,12 +44,6 @@ export default function StudioSettingsPage({
                   </svg>
                   AI Configuration
                 </button>
-                <button type="button" onClick={() => setActiveTab("settings")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "settings" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M17 7H7c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 8H7V9h10v6z" />
-                  </svg>
-                  Default Settings
-                </button>
                 <button type="button" onClick={() => setActiveTab("plans")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "plans" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
                   <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
@@ -60,6 +56,12 @@ export default function StudioSettingsPage({
                   </svg>
                   Members
                 </button>
+                <button type="button" onClick={() => setActiveTab("studio-pages")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "studio-pages" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
+                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                  </svg>
+                  Studio Pages
+                </button>
                 <button type="button" onClick={() => setActiveTab("danger")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "danger" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
                   <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
@@ -69,8 +71,8 @@ export default function StudioSettingsPage({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-              <div className="lg:col-span-2 space-y-6">
+            <div className={activeTab === "studio-pages" ? "grid grid-cols-1 gap-6 lg:gap-8" : "grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"}>
+              <div className={`space-y-6 ${activeTab === "studio-pages" ? "" : "lg:col-span-2"}`}>
                 {activeTab === "general" && (
                 <div id="general-tab" className="tab-content">
                   <div id="workspace-basics-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm mb-6">
@@ -335,61 +337,6 @@ export default function StudioSettingsPage({
                 </div>
                 )}
 
-                {activeTab === "settings" && (
-                <div id="settings-tab" className="tab-content">
-                  <div id="default-settings-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
-                    <div className="flex items-center space-x-3 mb-6">
-                      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                          <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900">Default Settings</h3>
-                    </div>
-
-                    <div className="space-y-4">
-                      <label className="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors duration-200">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">Allow public mentors</p>
-                            <p className="text-xs text-gray-600">Let users discover and access public mentors</p>
-                          </div>
-                        </div>
-                        <div className="relative">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
-                          <div className="w-11 h-6 bg-blue-600 rounded-full peer-checked:bg-blue-600 transition-colors duration-200" />
-                          <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 translate-x-5" />
-                        </div>
-                      </label>
-
-                      <label className="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors duration-200">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                              <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">Enable embed support</p>
-                            <p className="text-xs text-gray-600">Allow mentors to be embedded on external sites</p>
-                          </div>
-                        </div>
-                        <div className="relative">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 transition-colors duration-200" />
-                          <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200" />
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                )}
-
                 {activeTab === "plans" && (
                 <div id="plans-tab" className="tab-content">
                   <div id="plans-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
@@ -577,6 +524,10 @@ export default function StudioSettingsPage({
                 </div>
                 )}
 
+                {activeTab === "studio-pages" && (
+                  <StudioPagesTab studioId={studioId} />
+                )}
+
                 {activeTab === "danger" && (
                 <div id="danger-tab" className="tab-content">
                   <div id="danger-zone-section" className="bg-white rounded-2xl border-2 border-red-200 p-6 sm:p-8 shadow-sm">
@@ -620,6 +571,7 @@ export default function StudioSettingsPage({
                 </div>
                 )}
 
+                {activeTab !== "studio-pages" ? (
                 <div id="action-buttons" className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-4 sticky bottom-4 bg-gray-50 py-4 rounded-xl">
                   <button type="button" className="px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200 order-2 sm:order-1">
                     Cancel
@@ -631,8 +583,10 @@ export default function StudioSettingsPage({
                     <span>Save Changes</span>
                   </button>
                 </div>
+                ) : null}
               </div>
 
+              {activeTab !== "studio-pages" ? (
               <div className="lg:col-span-1">
                 <div className="sticky top-24">
                   <div id="preview-panel" className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
@@ -721,6 +675,7 @@ export default function StudioSettingsPage({
                   </div>
                 </div>
               </div>
+              ) : null}
             </div>
           </div>
       </main>
