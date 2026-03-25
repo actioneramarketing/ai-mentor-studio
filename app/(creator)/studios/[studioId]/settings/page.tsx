@@ -440,7 +440,7 @@ function StudioSettingsPageInner({
                         <div className="flex items-center justify-between mb-2">
                           <div>
                             <h4 className="font-semibold text-gray-900">Free Access</h4>
-                            <p className="text-sm text-gray-600">Limited to 3 coaches</p>
+                            <p className="text-sm text-gray-600">Limited to 3 mentors</p>
                           </div>
                           <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
                         </div>
@@ -456,7 +456,7 @@ function StudioSettingsPageInner({
                         <div className="flex items-center justify-between mb-2">
                           <div>
                             <h4 className="font-semibold text-gray-900">Pro Plan</h4>
-                            <p className="text-sm text-gray-600">$29/month - Unlimited coaches</p>
+                            <p className="text-sm text-gray-600">$29/month - Unlimited mentors</p>
                           </div>
                           <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Active</span>
                         </div>

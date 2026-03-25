@@ -103,7 +103,7 @@ export default function NewMentorPage() {
   const router = useRouter()
   const modalTitleId = useId()
 
-  const [mentorName, setMentorName] = useState("Emergency Preparedness Coach")
+  const [mentorName, setMentorName] = useState("Emergency Preparedness Mentor")
   const [mentorDescription, setMentorDescription] = useState(
     "Build a personalized 72-hour emergency kit based on your household, location, and needs. Get step-by-step guidance for preparedness planning.",
   )
@@ -203,11 +203,11 @@ export default function NewMentorPage() {
                     id="mentor-name"
                     value={mentorName}
                     onChange={(e) => setMentorName(e.target.value)}
-                    placeholder="e.g., Emergency Preparedness Coach"
+                    placeholder="e.g., Emergency Preparedness Mentor"
                     className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
                   />
                   <p className="mt-2 text-xs text-gray-500">
-                    This is what users will see when browsing coaches
+                    This is what users will see when browsing mentors
                   </p>
                 </div>
 
@@ -564,7 +564,7 @@ export default function NewMentorPage() {
                           type="button"
                           className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
                         >
-                          Open Coach
+                          Open Mentor
                         </button>
                       </div>
                     </div>

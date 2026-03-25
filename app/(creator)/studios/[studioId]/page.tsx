@@ -23,7 +23,7 @@ export default function StudioDetailPage() {
                 </div>
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Prepared Life</h2>
-                  <p className="text-sm sm:text-base text-gray-600">AI Coach Library</p>
+                  <p className="text-sm sm:text-base text-gray-600">AI Mentor Library</p>
                 </div>
               </div>
 
@@ -64,12 +64,12 @@ export default function StudioDetailPage() {
                 <div className="flex-1 max-w-full sm:max-w-md">
                   <div className="relative">
                     <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
-                    <input type="text" placeholder="Search coaches..." className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm sm:text-base" />
+                    <input type="text" placeholder="Search mentors..." className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm sm:text-base" />
                   </div>
                 </div>
                 <button id="create-coach-btn" className="px-4 sm:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center justify-center space-x-2 text-sm sm:text-base">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
-                  <span>Create New Coach</span>
+                  <span>Create New Mentor</span>
                 </button>
               </div>
             </div>
@@ -84,7 +84,7 @@ export default function StudioDetailPage() {
             </div>
 
             <div id="coaches-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {/* Coach Card 1 */}
+              {/* Mentor card 1 */}
               <div id="coach-card-1" className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-lg">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -110,7 +110,7 @@ export default function StudioDetailPage() {
                       <span>v2.1</span>
                     </div>
                   </div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1">
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C87.6 186.8 64 245.9 64 304v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-36.5 18.7-70.6 49.6-92.5 42.2-29.7 95.5-45.5 142.4-45.5s100.2 15.8 142.4 45.5c30.9 21.9 49.6 56 49.6 92.5v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-58.1-23.6-117.2-64.1-156.3C406.8 109.6 353.2 80 288 80z" /></svg>
@@ -128,7 +128,7 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 2 */}
+              {/* Mentor card 2 */}
               <div id="coach-card-2" className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-lg">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -138,7 +138,7 @@ export default function StudioDetailPage() {
                       </div>
                       <div>
                         <h3 className="text-base sm:text-lg font-bold text-gray-900">Emergency Chat Guide</h3>
-                        <span className="text-xs text-gray-500 font-medium">Chat Coach</span>
+                        <span className="text-xs text-gray-500 font-medium">Chat Mentor</span>
                       </div>
                     </div>
                     <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
@@ -148,7 +148,7 @@ export default function StudioDetailPage() {
                     <div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" /></svg><span>Edited 1d ago</span></div>
                     <div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M160 80c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V80zM0 272c0-26.5 21.5-48 48-48H80c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V272z" /></svg><span>v1.8</span></div>
                   </div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C87.6 186.8 64 245.9 64 304v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-36.5 18.7-70.6 49.6-92.5 42.2-29.7 95.5-45.5 142.4-45.5s100.2 15.8 142.4 45.5c30.9 21.9 49.6 56 49.6 92.5v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-58.1-23.6-117.2-64.1-156.3C406.8 109.6 353.2 80 288 80z" /></svg><span>Preview</span></button>
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V48C0 21.5 21.5 0 48 0H208z" /></svg><span>Duplicate</span></button>
@@ -157,7 +157,7 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 3 */}
+              {/* Mentor card 3 */}
               <div id="coach-card-3" className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-lg">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -177,7 +177,7 @@ export default function StudioDetailPage() {
                     <div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" /></svg><span>Edited 3d ago</span></div>
                     <div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M160 80c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V80z" /></svg><span>v1.5</span></div>
                   </div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C87.6 186.8 64 245.9 64 304v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-36.5 18.7-70.6 49.6-92.5 42.2-29.7 95.5-45.5 142.4-45.5s100.2 15.8 142.4 45.5c30.9 21.9 49.6 56 49.6 92.5v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-58.1-23.6-117.2-64.1-156.3C406.8 109.6 353.2 80 288 80z" /></svg><span>Preview</span></button>
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V48C0 21.5 21.5 0 48 0H208z" /></svg><span>Duplicate</span></button>
@@ -186,7 +186,7 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 4 - Draft */}
+              {/* Mentor card 4 - Draft */}
               <div id="coach-card-4" className="bg-white rounded-2xl border-2 border-yellow-200 hover:border-yellow-300 transition-all duration-200 overflow-hidden group hover:shadow-lg opacity-75">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -196,7 +196,7 @@ export default function StudioDetailPage() {
                       </div>
                       <div>
                         <h3 className="text-base sm:text-lg font-bold text-gray-900">First Aid Assistant</h3>
-                        <span className="text-xs text-gray-500 font-medium">Chat Coach</span>
+                        <span className="text-xs text-gray-500 font-medium">Chat Mentor</span>
                       </div>
                     </div>
                     <span className="px-2 sm:px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">Draft</span>
@@ -206,7 +206,7 @@ export default function StudioDetailPage() {
                     <div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" /></svg><span>Edited 5d ago</span></div>
                     <div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M160 80c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V80z" /></svg><span>v0.3</span></div>
                   </div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C87.6 186.8 64 245.9 64 304v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-36.5 18.7-70.6 49.6-92.5 42.2-29.7 95.5-45.5 142.4-45.5s100.2 15.8 142.4 45.5c30.9 21.9 49.6 56 49.6 92.5v80c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V304c0-58.1-23.6-117.2-64.1-156.3C406.8 109.6 353.2 80 288 80z" /></svg><span>Preview</span></button>
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V48C0 21.5 21.5 0 48 0H208z" /></svg><span>Duplicate</span></button>
@@ -215,7 +215,7 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 5 - Water Storage Planner */}
+              {/* Mentor card 5 - Water Storage Planner */}
               <div id="coach-card-5" className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-lg">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -227,7 +227,7 @@ export default function StudioDetailPage() {
                   </div>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">Calculate water storage needs and create customized water emergency preparedness plans for households.</p>
                   <div className="flex items-center space-x-4 mb-6 text-xs text-gray-500"><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0z" /></svg><span>Edited 4d ago</span></div><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M160 80" /></svg><span>v1.2</span></div></div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80" /></svg><span>Preview</span></button>
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M208 0" /></svg><span>Duplicate</span></button>
@@ -236,7 +236,7 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 6 - Power Outage Simulator */}
+              {/* Mentor card 6 - Power Outage Simulator */}
               <div id="coach-card-6" className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-lg">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -248,7 +248,7 @@ export default function StudioDetailPage() {
                   </div>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">Interactive training for managing extended power outages and maintaining safety during electrical emergencies.</p>
                   <div className="flex items-center space-x-4 mb-6 text-xs text-gray-500"><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0z" /></svg><span>Edited 1w ago</span></div><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M160 80" /></svg><span>v2.0</span></div></div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80" /></svg><span>Preview</span></button>
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M208 0" /></svg><span>Duplicate</span></button>
@@ -257,7 +257,7 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 7 - Home Safety Checklist - Draft */}
+              {/* Mentor card 7 - Home Safety Checklist - Draft */}
               <div id="coach-card-7" className="bg-white rounded-2xl border-2 border-yellow-200 hover:border-yellow-300 transition-all duration-200 overflow-hidden group hover:shadow-lg opacity-75">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -269,7 +269,7 @@ export default function StudioDetailPage() {
                   </div>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">Comprehensive home safety assessment tool with room-by-room preparedness recommendations.</p>
                   <div className="flex items-center space-x-4 mb-6 text-xs text-gray-500"><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0z" /></svg><span>Edited 1w ago</span></div><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M160 80" /></svg><span>v0.5</span></div></div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80" /></svg><span>Preview</span></button>
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M208 0" /></svg><span>Duplicate</span></button>
@@ -278,19 +278,19 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 8 - Weather Emergency Guide */}
+              {/* Mentor card 8 - Weather Emergency Guide */}
               <div id="coach-card-8" className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-lg">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-sm"><svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 0c-69.6 0-126 56.4-126 126 0 56.3 37.1 104 88.5 119.9-21.9 17.4-35.5 44.3-35.5 74.1 0 51.9 42.1 94 94 94s94-42.1 94-94c0-29.8-13.6-56.7-35.5-74.1C424.9 230 462 182.3 462 126 462 56.4 405.6 0 288 0z" /></svg></div>
-                      <div><h3 className="text-base sm:text-lg font-bold text-gray-900">Weather Emergency Guide</h3><span className="text-xs text-gray-500 font-medium">Chat Coach</span></div>
+                      <div><h3 className="text-base sm:text-lg font-bold text-gray-900">Weather Emergency Guide</h3><span className="text-xs text-gray-500 font-medium">Chat Mentor</span></div>
                     </div>
                     <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
                   </div>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">Real-time guidance for severe weather preparation and response across different climate conditions.</p>
                   <div className="flex items-center space-x-4 mb-6 text-xs text-gray-500"><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0z" /></svg><span>Edited 6d ago</span></div><div className="flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M160 80" /></svg><span>v1.9</span></div></div>
-                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Coach</button>
+                  <button type="button" className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 mb-3 text-sm sm:text-base">Edit Mentor</button>
                   <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M288 80" /></svg><span>Preview</span></button>
                     <button type="button" className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-1"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M208 0" /></svg><span>Duplicate</span></button>
@@ -299,7 +299,7 @@ export default function StudioDetailPage() {
                 </div>
               </div>
 
-              {/* Coach Card 9 - Legacy Kit Builder - Archived */}
+              {/* Mentor card 9 - Legacy Kit Builder - Archived */}
               <div id="coach-card-9" className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 overflow-hidden group hover:shadow-lg opacity-50">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -324,7 +324,7 @@ export default function StudioDetailPage() {
             <div id="stats-section" className="mt-8 sm:mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs sm:text-sm text-gray-600 font-medium">Total Coaches</span>
+                  <span className="text-xs sm:text-sm text-gray-600 font-medium">Total Mentors</span>
                   <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 640 512" aria-hidden><path d="M320 0c17.7 0 32 14.3 32 32V64h92c6.4 0 12.5 2.5 17 7s7 10.6 7 17v24 64 24c0 6.4-2.5 12.5-7 17s-10.6 7-17 7H428v64h52c13.3 0 24 10.7 24 24s-10.7 24-24 24H428v64h52c6.4 0 12.5 2.5 17 7s7 10.6 7 17v24 64 24c0 6.4-2.5 12.5-7 17s-10.6 7-17 7H352v32c0 17.7-14.3 32-32 32s-32-14.3-32-32V448H188c-6.4 0-12.5-2.5-17-7s-7-10.6-7-17V416 352 328c0-6.4 2.5-12.5 7-17s10.6-7 17-7h68V240H188c-6.4 0-12.5-2.5-17-7s-7-10.6-7-17V192 128 104c0-6.4 2.5-12.5 7-17s10.6-7 17-7h68V32c0-17.7 14.3-32 32-32z" /></svg>
                 </div>
                 <p className="text-2xl sm:text-3xl font-bold text-gray-900">9</p>
@@ -421,7 +421,7 @@ export default function StudioDetailPage() {
               </div>
             </div>
             <div id="leads-empty-state" className="hidden bg-white rounded-2xl border-2 border-dashed border-gray-300 p-12 sm:p-16 text-center">
-              <div className="max-w-lg mx-auto"><div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6"><svg className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" fill="currentColor" viewBox="0 0 640 512" aria-hidden><path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z" /></svg></div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">No Leads Yet</h3><p className="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">Create your first lead capture page to start collecting interested users for your AI coaches.</p><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg inline-flex items-center space-x-2"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg><span>Create Lead Page</span></button>            </div>
+              <div className="max-w-lg mx-auto"><div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6"><svg className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" fill="currentColor" viewBox="0 0 640 512" aria-hidden><path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z" /></svg></div><h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">No Leads Yet</h3><p className="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">Create your first lead capture page to start collecting interested users for your AI mentors.</p><button type="button" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg inline-flex items-center space-x-2"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg><span>Create Lead Page</span></button>            </div>
           </div>
           </div>
           )}

@@ -68,7 +68,7 @@ export default async function CreateLeadPage({
                       <textarea
                         rows={3}
                         placeholder="A supporting message that explains the value..."
-                        defaultValue="Get personalized guidance from our AI coach to build a complete emergency kit tailored to your household."
+                        defaultValue="Get personalized guidance from our AI mentor to build a complete emergency kit tailored to your household."
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all duration-200 resize-none"
                       />
                     </div>
@@ -99,7 +99,7 @@ export default async function CreateLeadPage({
                       <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all duration-200">
                         <option value="">Select a mentor...</option>
                         <option>72-Hour Emergency Planner</option>
-                        <option>Family Safety Coach</option>
+                        <option>Family Safety Mentor</option>
                         <option>Budget Preparedness Guide</option>
                         <option>Scenario Simulator</option>
                       </select>
@@ -434,7 +434,7 @@ export default async function CreateLeadPage({
                                 </svg>
                               </div>
                               <h1 className="text-2xl font-bold text-white mb-2">Build Your 72-Hour Emergency Kit in 10 Minutes</h1>
-                              <p className="text-purple-100 text-sm">Get personalized guidance from our AI coach to build a complete emergency kit tailored to your household.</p>
+                              <p className="text-purple-100 text-sm">Get personalized guidance from our AI mentor to build a complete emergency kit tailored to your household.</p>
                             </div>
                           </div>
                         </div>

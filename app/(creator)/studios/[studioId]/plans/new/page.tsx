@@ -284,7 +284,7 @@ export default async function CreatePlanPage({
                                 </svg>
                               </div>
                               <div>
-                                <p className="font-semibold text-gray-900 text-sm">First Aid Coach</p>
+                                <p className="font-semibold text-gray-900 text-sm">First Aid Mentor</p>
                                 <p className="text-xs text-gray-600">Medical emergencies</p>
                               </div>
                             </div>
