@@ -43,7 +43,7 @@ export function StudioPagesTab({ studioId }: StudioPagesTabProps) {
   }
 
   return (
-    <div id="studio-pages-tab" className="tab-content space-y-6 p-6">
+    <div id="studio-pages-tab" className="tab-content space-y-6">
       {pages.length === 0 ? (
         <EmptyState studioId={studioId} />
       ) : (
