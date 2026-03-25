@@ -341,7 +341,7 @@ export default function NewMentorStep2Page() {
 
   return (
     <div className="bg-gray-50 font-sans">
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto">
         <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8 lg:py-8">
           <div id="page-header" className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900">Create a New AI Mentor</h1>
@@ -352,11 +352,11 @@ export default function NewMentorStep2Page() {
 
           <MentorWizardProgress currentStep={2} />
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <div className="space-y-6 lg:col-span-3">
               <div
                 id="mentor-steps-form"
-                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:p-8"
+                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100"
               >
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -536,13 +536,13 @@ export default function NewMentorStep2Page() {
               </div>
             </div>
 
-            <div className="min-w-0 space-y-6">
+            <div className="min-w-0 space-y-6 lg:col-span-6">
               {selected ? (
                 <div
                   ref={editorRef}
                   id="step-editor"
                   key={selected.id}
-                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:p-8"
+                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100"
                 >
                   <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <h2 className="text-xl font-bold text-gray-900">
@@ -738,7 +738,7 @@ export default function NewMentorStep2Page() {
 
               <div
                 id="help-panel"
-                className="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 lg:p-8"
+                className="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 p-6"
               >
                 <div className="mb-4 flex items-start space-x-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-600">
@@ -761,7 +761,7 @@ export default function NewMentorStep2Page() {
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6 lg:col-span-3">
               <div className="sticky top-6">
                 <div
                   id="preview-panel"
