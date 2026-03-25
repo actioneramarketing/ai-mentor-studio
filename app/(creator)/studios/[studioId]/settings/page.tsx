@@ -102,20 +102,18 @@ function StudioSettingsPageInner({
   return (
     <div className="bg-gray-50 font-sans min-h-0">
       <main className="flex-1 overflow-x-hidden overflow-y-auto">
-        <div className="w-full px-6 pt-6">
+        <div className="mx-auto w-full max-w-6xl px-6 py-6">
           <div id="page-header">
             <h1 className="text-2xl font-bold text-gray-900">Studio Settings</h1>
             <p className="mt-1 text-sm text-gray-600 sm:text-base">
               Manage your workspace configuration, access, and AI settings.
             </p>
           </div>
-        </div>
 
-        <div className="w-full border-b border-gray-200">
-          <div className="px-6">
+          <div className="mt-6 border-b border-gray-200">
             <nav
               id="tabs-navigation"
-              className="flex flex-wrap gap-x-6 gap-y-1"
+              className="flex flex-wrap gap-6"
               aria-label="Settings sections"
             >
               {tabs.map(({ key, label }) => (
@@ -131,10 +129,8 @@ function StudioSettingsPageInner({
               ))}
             </nav>
           </div>
-        </div>
 
-        <div className="mx-auto w-full max-w-5xl px-6 py-6">
-            <div className="space-y-6">
+          <div className="w-full space-y-6 pt-6">
                 {activeTab === "general" && (
                 <div id="general-tab" className="tab-content">
                   <div id="workspace-basics-section" className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm mb-6">
@@ -666,7 +662,7 @@ function StudioSettingsPageInner({
                   </button>
                 </div>
                 ) : null}
-            </div>
+          </div>
         </div>
       </main>
       {aiSetupModal !== null ? (
