@@ -1,290 +1,742 @@
 "use client"
 
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { MentorWizardProgress } from "../mentor-wizard-progress"
+
+type FlowStep = {
+  id: string
+  title: string
+  subtitle: string
+  goal: string
+  aiInstructions: string
+  questions: string[]
+  completionRule: string
+  allowSkip: boolean
+  generateSummary: boolean
+}
+
+function createId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  return `step-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+}
+
+const INITIAL_STEPS: FlowStep[] = [
+  {
+    id: "seed-1",
+    title: "Assess Your Household",
+    subtitle: "Understand household size, special needs, and location risks",
+    goal: "Understand household size, special needs, and location-specific risks to create a personalized emergency kit.",
+    aiInstructions:
+      "Ask the user about their household composition, including number of adults, children, and any special needs (elderly, infants, pets, medical conditions). Then inquire about their geographic location and primary risks (earthquakes, hurricanes, floods, etc.). Be conversational and supportive. Don't overwhelm them with too many questions at once.",
+    questions: [
+      "How many people are in your household (adults, children, infants)?",
+      "Does anyone have special needs or medical conditions?",
+      "What geographic location are you in, and what are the primary risks (earthquakes, hurricanes, etc.)?",
+    ],
+    completionRule: "AI decides when the step is complete",
+    allowSkip: false,
+    generateSummary: true,
+  },
+  {
+    id: "seed-2",
+    title: "Essential Supplies",
+    subtitle: "Identify must-have items for your 72-hour kit",
+    goal: "Prioritize essential supplies for the user's situation.",
+    aiInstructions: "Guide the user through core supply categories with practical examples.",
+    questions: ["What supplies do you already have at home?", "Do you need help prioritizing food, water, or medical items?"],
+    completionRule: "AI decides when the step is complete",
+    allowSkip: false,
+    generateSummary: true,
+  },
+  {
+    id: "seed-3",
+    title: "Budget Planning",
+    subtitle: "Prioritize purchases within your budget",
+    goal: "Help the user plan purchases without overspending.",
+    aiInstructions: "Ask about budget constraints and suggest phased purchasing.",
+    questions: ["What is a comfortable monthly budget for preparedness supplies?"],
+    completionRule: "AI decides when the step is complete",
+    allowSkip: false,
+    generateSummary: true,
+  },
+  {
+    id: "seed-4",
+    title: "Action Plan",
+    subtitle: "Create your personalized shopping list and timeline",
+    goal: "Leave the user with a clear next checklist.",
+    aiInstructions: "Summarize decisions and propose a simple timeline.",
+    questions: ["Would you like a week-by-week plan or a single shopping list?"],
+    completionRule: "AI decides when the step is complete",
+    allowSkip: false,
+    generateSummary: true,
+  },
+]
+
+function blankStep(): FlowStep {
+  return {
+    id: createId(),
+    title: "",
+    subtitle: "",
+    goal: "",
+    aiInstructions: "",
+    questions: [],
+    completionRule: "AI decides when the step is complete",
+    allowSkip: false,
+    generateSummary: true,
+  }
+}
 
 export default function NewMentorStep2Page() {
   const params = useParams()
   const studioId = String(params.studioId ?? "")
   const router = useRouter()
+  const editorRef = useRef<HTMLDivElement>(null)
+
+  const [steps, setSteps] = useState<FlowStep[]>(INITIAL_STEPS)
+  const [selectedId, setSelectedId] = useState<string>(INITIAL_STEPS[0]?.id ?? "")
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+
+  const selected = useMemo(() => steps.find((s) => s.id === selectedId) ?? steps[0], [steps, selectedId])
+  const selectedIndex = useMemo(() => {
+    if (!selected) return 0
+    const i = steps.findIndex((s) => s.id === selected.id)
+    return i >= 0 ? i : 0
+  }, [steps, selected])
+
+  const patchStep = useCallback((id: string, patch: Partial<FlowStep>) => {
+    setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)))
+  }, [])
+
+  const scrollToEditor = useCallback(() => {
+    requestAnimationFrame(() => {
+      editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    })
+  }, [])
+
+  const selectStep = useCallback(
+    (id: string) => {
+      setSelectedId(id)
+    },
+    []
+  )
+
+  const addStep = useCallback(() => {
+    const next = blankStep()
+    setSteps((prev) => [...prev, next])
+    setSelectedId(next.id)
+    scrollToEditor()
+  }, [scrollToEditor])
+
+  const duplicateStep = useCallback(
+    (id: string) => {
+      let newId: string | null = null
+      setSteps((prev) => {
+        const i = prev.findIndex((s) => s.id === id)
+        if (i < 0) return prev
+        const src = prev[i]
+        const copy: FlowStep = {
+          ...src,
+          id: createId(),
+          title: src.title.trim() ? `Copy of ${src.title}` : "Copy of Untitled step",
+          questions: [...src.questions],
+        }
+        newId = copy.id
+        return [...prev.slice(0, i + 1), copy, ...prev.slice(i + 1)]
+      })
+      if (newId) {
+        setSelectedId(newId)
+        queueMicrotask(scrollToEditor)
+      }
+    },
+    [scrollToEditor]
+  )
+
+  const deleteStep = useCallback((id: string) => {
+    setSteps((prev) => {
+      const idx = prev.findIndex((s) => s.id === id)
+      const next = prev.filter((s) => s.id !== id)
+      if (next.length === 0) {
+        const fresh = blankStep()
+        Promise.resolve().then(() => setSelectedId(fresh.id))
+        return [fresh]
+      }
+      Promise.resolve().then(() => {
+        setSelectedId((cur) => (cur === id ? next[Math.max(0, idx - 1)]!.id : cur))
+      })
+      return next
+    })
+  }, [])
+
+  const reorder = useCallback((fromId: string, toId: string) => {
+    if (fromId === toId) return
+    setSteps((prev) => {
+      const from = prev.findIndex((s) => s.id === fromId)
+      const to = prev.findIndex((s) => s.id === toId)
+      if (from < 0 || to < 0) return prev
+      const copy = [...prev]
+      const [moved] = copy.splice(from, 1)
+      copy.splice(to, 0, moved)
+      return copy
+    })
+  }, [])
+
+  const activePreview = selected ?? steps[0]
 
   return (
     <div className="bg-gray-50 font-sans">
       <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8 lg:py-8">
+          <div id="page-header" className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">Create a New AI Mentor</h1>
+            <p className="mt-1 text-base text-gray-600 lg:text-lg">
+              Build an AI mentor that guides users through a structured experience.
+            </p>
+          </div>
 
-            <div className="px-4 lg:px-8 py-6 lg:py-8 max-w-7xl mx-auto">
-              <div id="page-header" className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Create a New AI Mentor</h1>
-                <p className="mt-1 text-base lg:text-lg text-gray-600">
-                  Build an AI mentor that guides users through a structured experience.
-                </p>
-              </div>
+          <MentorWizardProgress currentStep={2} />
 
-              <MentorWizardProgress currentStep={2} />
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                  <div id="instructions-form" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Mentor Instructions</h2>
-                    <p className="text-sm text-gray-600 mb-6">Define how your AI mentor behaves and guides users.</p>
-
-                    <div className="space-y-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">Mentor Role</label>
-                        <input
-                          type="text"
-                          defaultValue="Emergency Preparedness Expert"
-                          placeholder="Emergency Preparedness Expert"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all duration-200"
-                        />
-                        <p className="text-xs text-gray-500 mt-2">Describe the role or expertise the AI mentor represents</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">Mentor Objective</label>
-                        <textarea
-                          rows={5}
-                          placeholder="Describe the outcome this mentor helps users achieve..."
-                          defaultValue="Help users build a comprehensive 72-hour emergency preparedness kit tailored to their household, location, and specific needs."
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all duration-200 resize-none"
-                        />
-                        <p className="text-xs text-gray-500 mt-2">What should users accomplish by the end of this session?</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-3">Tone &amp; Teaching Style</label>
-                        <div className="flex flex-wrap gap-2">
-                          <button type="button" className="tone-chip px-4 py-2 border-2 border-blue-500 bg-blue-50 text-blue-700 rounded-full font-medium text-sm hover:bg-blue-100 transition-colors duration-200">
-                            Friendly
-                          </button>
-                          <button type="button" className="tone-chip px-4 py-2 border-2 border-gray-200 bg-white text-gray-700 rounded-full font-medium text-sm hover:bg-gray-50 transition-colors duration-200">
-                            Professional
-                          </button>
-                          <button type="button" className="tone-chip px-4 py-2 border-2 border-gray-200 bg-white text-gray-700 rounded-full font-medium text-sm hover:bg-gray-50 transition-colors duration-200">
-                            Motivational
-                          </button>
-                          <button type="button" className="tone-chip px-4 py-2 border-2 border-blue-500 bg-blue-50 text-blue-700 rounded-full font-medium text-sm hover:bg-blue-100 transition-colors duration-200">
-                            Teacher
-                          </button>
-                          <button type="button" className="tone-chip px-4 py-2 border-2 border-gray-200 bg-white text-gray-700 rounded-full font-medium text-sm hover:bg-gray-50 transition-colors duration-200">
-                            Strategic Advisor
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2">Select the tone and teaching style your mentor should use (multiple selections allowed)</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-3">Response Style</label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <button type="button" className="response-style-card p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition-colors duration-200 text-left">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M349.4 44.6c5.9-13.7 1.5-29.7-10.6-38.5s-28.5-8-39.9-1.8l-48 24C240.4 47.9 233 64 233 82V192 64 0c0-17.7-14.3-32-32-32s-32 14.3-32 32V192 82c0 18-7.4 34.1-20 45.9l-48 24c-11.5 6.2-22 15.9-28.6 27.9s-8.6 25.8-5.2 39.5z" /></svg>
-                              </div>
-                              <h3 className="font-semibold text-gray-900">Concise</h3>
-                            </div>
-                            <p className="text-sm text-gray-600">Short, direct responses</p>
-                          </button>
-                          <button type="button" className="response-style-card p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition-colors duration-200 text-left">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9z" /></svg>
-                              </div>
-                              <h3 className="font-semibold text-gray-900">Conversational</h3>
-                            </div>
-                            <p className="text-sm text-gray-600">Natural, flowing dialogue</p>
-                          </button>
-                          <button type="button" className="response-style-card p-4 border-2 border-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-left">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M24 56c0-13.3 10.7-24 24-24H80c13.3 0 24 10.7 24 24v8H24V56zm0 64H104V456c0 13.3-10.7 24-24 24s-24-10.7-24-24V120zm64 0h96v96H88v-96zm320 0V456c0 13.3-10.7 24-24 24s-24-10.7-24-24V120H88v96h96v-96h96V120zm96 0h32c13.3 0 24 10.7 24 24v8H408V120zm0 64h32V456c0 13.3-10.7 24-24 24s-24-10.7-24-24V184z" /></svg>
-                              </div>
-                              <h3 className="font-semibold text-gray-900">Step-by-Step Guidance</h3>
-                            </div>
-                            <p className="text-sm text-gray-600">Structured, sequential guidance</p>
-                          </button>
-                          <button type="button" className="response-style-card p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition-colors duration-200 text-left">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M249.6 471.5c10.8 3.8 22.4-4.1 22.4-15.5V78.6c0-4.2-1.6-8.4-5.8-11.4C237.4 55.1 208 42.4 176 42.4c-32 0-61.4 12.7-88.2 24.4c-11.4 4.8-24.2 2-32.4-6.7S48 34.6 48 22.1V22.1C48 6.9 59.4-3.2 74.4 1.4C104.6 12.7 138.2 26.4 176 26.4c32 0 61.4-12.7 88.2-24.4c11.4-4.8 24.2-2 32.4 6.7s12.8 20.5 5.6 31.1c-10.2 15.5-24.2 28.7-41.2 38.7c-17 10-37.4 16.9-60.6 19.9V456c0 11.5 11.7 19.3 22.4 15.5z" /></svg>
-                              </div>
-                              <h3 className="font-semibold text-gray-900">Detailed Explanation</h3>
-                            </div>
-                            <p className="text-sm text-gray-600">Comprehensive explanations</p>
-                          </button>
-                          <button type="button" className="response-style-card p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition-colors duration-200 text-left sm:col-span-2">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.2 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm112.6-32H376.7c-2.8-24.9-6.9-49.9-12.1-74.9c-5.2-25-11.5-49.9-18.8-74.8c7.3-24.9 13.6-49.8 18.8-74.8c5.2-25 9.3-50 12.1-74.9h117.4c11.4 25.9 20.3 52.8 25.9 80.7c-5.6 27.9-14.5 54.8-25.9 80.7zM320 32c-24.9 0-49.7 4.1-73.2 12.1C237.7 78.8 205.9 100.1 174 126.2c-31.9 26.1-53.2 57.9-66.9 72.8C93.5 213.9 88 234.9 88 256s5.5 42.1 19.1 56.9c13.7 14.9 35 46.8 66.9 72.8c31.9 26.1 63.7 47.4 72.8 82.1C270.3 475.9 295.1 480 320 480c24.9 0 49.7-4.1 73.2-12.1c9.2-34.7 40.9-56 72.8-82.1c31.9-26.1 53.2-57.9 66.9-72.8C426.5 298.1 432 277.1 432 256s-5.5-42.1-19.1-56.9c-13.7-14.9-35-46.8-66.9-72.8c-31.9-26.1-63.7-47.4-72.8-82.1C390.3 36.1 365.5 32 320 32zM135.2 117.2C145 92.1 169.6 72 198.2 72h117.4c28.6 0 53.2 20.1 63 45.2c3.2 7.9 6 16 8.4 24.1H126.8c2.4-8.1 5.1-16.2 8.4-24.1zM8.1 256c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H131.2c-2.1-20.6-3.2-42-3.2-64s1.1-43.4 3.2-64H8.1z" /></svg>
-                              </div>
-                              <h3 className="font-semibold text-gray-900">Action-Oriented</h3>
-                            </div>
-                            <p className="text-sm text-gray-600">Focus on practical, actionable steps</p>
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2">Select one or more response styles (multiple selections allowed)</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">Guidance Rules</label>
-                        <textarea
-                          rows={5}
-                          placeholder={"Always ask clarifying questions before giving recommendations.\nFocus on practical, actionable advice.\nAvoid overwhelming the user with too many options."}
-                          defaultValue="Always provide safe and responsible guidance.
-Encourage preparedness planning without causing fear or panic.
-Focus on practical, actionable steps that users can implement immediately.
-Ask clarifying questions before giving recommendations."
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all duration-200 resize-none"
-                        />
-                        <p className="text-xs text-gray-500 mt-2">Define behavioral guidelines the mentor should follow</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">Advanced Instructions <span className="text-gray-400 font-normal">(Optional)</span></label>
-                        <textarea
-                          rows={6}
-                          placeholder="Ask about household size and location before recommending emergency supplies."
-                          defaultValue="Ask clarifying questions about household size, location, and specific needs before providing recommendations.
-
-Consider factors like:
-- Number of adults and children
-- Geographic location and climate
-- Available storage space
-- Budget constraints
-- Special dietary or medical needs
-
-Provide personalized recommendations based on these factors."
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all duration-200 resize-none"
-                        />
-                        <p className="text-xs text-gray-500 mt-2">Optional additional instructions that guide how the AI should respond</p>
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+            <div className="space-y-6 lg:col-span-2">
+              <div
+                id="mentor-steps-form"
+                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:p-8"
+              >
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Mentor Step Flow</h2>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Define the steps users move through—this is the backbone of your guided experience.
+                    </p>
                   </div>
-
-                  <div id="help-panel" className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 p-6 lg:p-8">
-                    <div className="flex items-start space-x-3 mb-4">
-                      <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 384 512" aria-hidden><path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4C389.7 222.5 432 137.7 432 64c0-35.3-28.7-64-64-64s-64 28.7-64 64c0 35.3 28.7 64 64 64c0 0 0 0 0 0c0 0 0 0 0 0l-32 32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c-17.7 0-32 14.3-32 32s14.3 32 32 32c0 0 0 0 0 0c53 0 96 43 96 96s-43 96-96 96s-96-43-96-96c0-17.7 14.3-32 32-32s32 14.3 32 32c0 35.3-28.7 64-64 64l0 0-32-32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c0 0 0 0 0 0l32 32c0 0 0 0 0 0c35.3 0 64 28.7 64 64s-28.7 64-64 64z" /></svg>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-1">Tips for writing great mentor instructions</h3>
-                        <p className="text-sm text-gray-600">Follow these best practices to create effective guidance</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-start space-x-3">
-                        <svg className="w-5 h-5 text-indigo-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-sm mb-1">Define a clear outcome</h4>
-                          <p className="text-sm text-gray-700">Be specific about what users will achieve by the end</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <svg className="w-5 h-5 text-indigo-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-sm mb-1">Encourage helpful guidance</h4>
-                          <p className="text-sm text-gray-700">Set a supportive, encouraging tone that builds confidence</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <svg className="w-5 h-5 text-indigo-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-sm mb-1">Ask clarifying questions</h4>
-                          <p className="text-sm text-gray-700">Gather context before providing recommendations</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <svg className="w-5 h-5 text-indigo-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-sm mb-1">Avoid overly long responses</h4>
-                          <p className="text-sm text-gray-700">Keep guidance focused and digestible for users</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-1">
-                  <div className="sticky top-6">
-                    <div id="preview-panel" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-bold text-gray-900">Live Preview</h3>
-                        <span className="text-xs text-gray-500">User view</span>
-                      </div>
-
-                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                          <div className="p-5">
-                            <div className="flex items-start space-x-3 mb-4">
-                              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
-                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 576 512" aria-hidden><path d="M0 80v352c0 26.5 21.5 48 48 48h48V32H48C21.5 32 0 53.5 0 80zm128 400h320V32H128v448zm64-248c0-4.4 3.6-8 8-8h56v-56c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v56h56c4.4 0 8 3.6 8 8v48c0 4.4-3.6 8-8 8h-56v56c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8v-56h-56c-4.4 0-8-3.6-8-8v-48z" /></svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-gray-900 text-sm mb-1">Emergency Preparedness Expert</h3>
-                                <span className="text-xs text-gray-500">Friendly • Teacher • Step-by-Step</span>
-                              </div>
-                            </div>
-
-                            <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                              <p className="text-sm text-gray-700 leading-relaxed mb-3">Hi, I&apos;m your Emergency Preparedness Expert. I&apos;ll guide you step-by-step to build a personalized 72-hour emergency kit based on your household, location, and needs.</p>
-                              <p className="text-sm text-gray-700 leading-relaxed">I&apos;ll ask clarifying questions to create a comprehensive plan that&apos;s practical and tailored just for you.</p>
-                            </div>
-
-                            <div className="space-y-2">
-                              <div className="flex items-start space-x-2 text-xs text-gray-600">
-                                <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                                <span>Asks clarifying questions</span>
-                              </div>
-                              <div className="flex items-start space-x-2 text-xs text-gray-600">
-                                <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                                <span>Provides safe guidance</span>
-                              </div>
-                              <div className="flex items-start space-x-2 text-xs text-gray-600">
-                                <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" /></svg>
-                                <span>Focuses on actionable steps</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                        <div className="flex items-start space-x-2">
-                          <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 512 512" aria-hidden><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zM192 176a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" /></svg>
-                          <p className="text-xs text-gray-700 leading-relaxed">This preview shows how your mentor will introduce itself to users based on your instructions.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div id="wizard-navigation" className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mt-6 lg:mt-8 sticky bottom-0">
-                <div className="flex items-center justify-between">
-                  <button type="button" className="px-4 lg:px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                    Cancel
-                  </button>
-                  <div className="flex items-center space-x-3">
-                    <button type="button" className="px-4 lg:px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center space-x-2">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" /></svg>
-                      <span className="hidden sm:inline">Back to Basics</span>
-                      <span className="sm:hidden">Back</span>
+                  <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      id="generate-flow-btn"
+                      className="flex items-center space-x-2 rounded-lg border-2 border-blue-600 bg-white px-4 py-2.5 font-semibold text-blue-600 shadow-sm transition-colors duration-200 hover:bg-blue-50 hover:shadow-md"
+                    >
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
+                        <path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 6.8-15.7 7.1-21.8 .4l-48.2-47.6c-4.1-4-7.2-9.2-9-14.8c-6.8 2.5-13.6 4.4-20.5 5.8c-1.2 8.5-3 16.9-5.4 25.2l-8.7 30.3c-2 6.9-8.3 11.8-15.4 11.8H208c-7.1 0-13.4-4.9-15.4-11.8l-8.7-30.3c-2.4-8.3-4.2-16.7-5.4-25.2c-6.9-1.4-13.7-3.3-20.5-5.8c-1.8 5.6-4.9 10.8-9 14.8l-48.2 47.6c-6.1 6.7-15.9 6.4-21.8-.4c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-6.8 15.7-7.1 21.8-.4l48.2 47.6c4.1 4 7.2 9.2 9 14.8c6.8-2.5 13.6-4.4 20.5-5.8c1.2-8.5 3-16.9 5.4-25.2l8.7-30.3C142.3 90.9 148.6 86 155.7 86H208c7.1 0 13.4 4.9 15.4 11.8l8.7 30.3c2.4 8.3 4.2 16.7 5.4 25.2c6.9 1.4 13.7 3.3 20.5 5.8c1.8-5.6 4.9-10.8 9-14.8l48.2-47.6c6.1-6.7 15.9-6.4 21.8 .4c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
+                      </svg>
+                      <span className="hidden sm:inline">Generate Mentor Flow</span>
+                      <span className="sm:hidden">Generate</span>
                     </button>
                     <button
                       type="button"
-                      className="px-6 lg:px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2"
-                      onClick={() => router.push(`/studios/${studioId}/mentors/new/step-3`)}
+                      id="add-step-btn"
+                      onClick={addStep}
+                      className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-700 hover:shadow-lg"
                     >
-                      <span className="hidden sm:inline">Continue to Conversation Starters</span>
-                      <span className="sm:inline lg:hidden">Continue</span>
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" /></svg>
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                        <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
+                      </svg>
+                      <span className="hidden sm:inline">Add Step</span>
                     </button>
+                  </div>
+                </div>
+
+                <div id="steps-list" className="mb-6 space-y-3">
+                  {steps.map((step, index) => {
+                    const isActive = step.id === selectedId
+                    const qCount = step.questions.length
+                    return (
+                      <div
+                        key={step.id}
+                        role="button"
+                        tabIndex={0}
+                        draggable
+                        onDragStart={() => setDraggingId(step.id)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault()
+                          if (draggingId) reorder(draggingId, step.id)
+                          setDraggingId(null)
+                        }}
+                        onDragEnd={() => setDraggingId(null)}
+                        onClick={() => selectStep(step.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            selectStep(step.id)
+                          }
+                        }}
+                        className={`step-card cursor-pointer rounded-xl border-2 p-4 transition-colors duration-200 ${
+                          isActive
+                            ? "border-blue-300 bg-blue-50 hover:border-blue-400"
+                            : "border-gray-200 bg-gray-50 hover:border-blue-300"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex min-w-0 flex-1 items-center space-x-3">
+                            <button
+                              type="button"
+                              className={`drag-handle cursor-move rounded-lg p-2 transition-colors duration-200 ${
+                                isActive ? "hover:bg-blue-100" : "hover:bg-gray-200"
+                              }`}
+                              aria-label="Reorder step"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <svg
+                                className={`h-5 w-5 ${isActive ? "text-blue-600" : "text-gray-400"}`}
+                                fill="currentColor"
+                                viewBox="0 0 320 512"
+                                aria-hidden
+                              >
+                                <path d="M64 64c0-17.7 14.3-32 32-32H224c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zm0 128c0-17.7 14.3-32 32-32H224c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zm0 128c0-17.7 14.3-32 32-32H224c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zm0 128c0-17.7 14.3-32 32-32H224c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32z" />
+                              </svg>
+                            </button>
+                            <div
+                              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-bold text-white ${
+                                isActive ? "bg-blue-600" : "bg-gray-400"
+                              }`}
+                            >
+                              {index + 1}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-base font-bold text-gray-900">
+                                {step.title.trim() || "Untitled step"}
+                              </h3>
+                              <p className="truncate text-sm text-gray-600">
+                                {step.subtitle.trim() || "Add a short description"}
+                              </p>
+                              <p className={`mt-1 text-xs ${isActive ? "text-blue-700" : "text-gray-500"}`}>
+                                {qCount} question{qCount === 1 ? "" : "s"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="ml-2 flex shrink-0 items-center space-x-2">
+                            <button
+                              type="button"
+                              className={`rounded-lg p-2 transition-colors duration-200 ${
+                                isActive ? "hover:bg-blue-100" : "hover:bg-gray-200"
+                              }`}
+                              title="Edit"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                selectStep(step.id)
+                                scrollToEditor()
+                              }}
+                            >
+                              <svg
+                                className={`h-5 w-5 ${isActive ? "text-blue-700" : "text-gray-600"}`}
+                                fill="currentColor"
+                                viewBox="0 0 512 512"
+                                aria-hidden
+                              >
+                                <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l6-35.4c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1V399.4zM439 7c7.3-7.3 19-7.3 26.3 0l47 47c7.3 7.3 7.3 19 0 26.3l-47 47-11.3-11.3 36.8-36.8c2.1-2.1 2.1-5.5 0-7.6s-5.5-2.1-7.6 0l-36.8 36.8L344 159 391 112l47 47c7.3 7.3 19 7.3 26.3 0s7.3-19 0-26.3l-47-47L439 7z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              className={`rounded-lg p-2 transition-colors duration-200 ${
+                                isActive ? "hover:bg-blue-100" : "hover:bg-gray-200"
+                              }`}
+                              title="Duplicate"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                duplicateStep(step.id)
+                              }}
+                            >
+                              <svg
+                                className={`h-5 w-5 ${isActive ? "text-blue-700" : "text-gray-600"}`}
+                                fill="currentColor"
+                                viewBox="0 0 448 512"
+                                aria-hidden
+                              >
+                                <path d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              className="rounded-lg p-2 transition-colors duration-200 hover:bg-red-100"
+                              title="Delete"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                deleteStep(step.id)
+                              }}
+                            >
+                              <svg className="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
+                  <div className="flex items-start space-x-2">
+                    <svg className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
+                      <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zM192 176a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
+                    </svg>
+                    <p className="text-sm leading-relaxed text-gray-700">
+                      Click a step to edit its details. Drag and drop to reorder the flow.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {selected ? (
+                <div
+                  ref={editorRef}
+                  id="step-editor"
+                  key={selected.id}
+                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:p-8"
+                >
+                  <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Edit Step: {selected.title.trim() || "Untitled step"}
+                    </h2>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        id="generate-step-content-btn"
+                        className="flex items-center space-x-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-md transition-all duration-200 hover:from-purple-600 hover:to-blue-600 hover:shadow-lg"
+                      >
+                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
+                          <path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 6.8-15.7 7.1-21.8 .4l-48.2-47.6c-4.1-4-7.2-9.2-9-14.8c-6.8 2.5-13.6 4.4-20.5 5.8c-1.2 8.5-3 16.9-5.4 25.2l-8.7 30.3c-2 6.9-8.3 11.8-15.4 11.8H208c-7.1 0-13.4-4.9-15.4-11.8l-8.7-30.3c-2.4-8.3-4.2-16.7-5.4-25.2c-6.9-1.4-13.7-3.3-20.5-5.8c-1.8 5.6-4.9 10.8-9 14.8l-48.2-47.6c-6.1 6.7-15.9 6.4-21.8-.4c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-6.8 15.7-7.1 21.8-.4l48.2 47.6c4.1 4 7.2 9.2 9 14.8c6.8-2.5 13.6-4.4 20.5-5.8c1.2-8.5 3-16.9 5.4-25.2l8.7-30.3C142.3 90.9 148.6 86 155.7 86H208c7.1 0 13.4 4.9 15.4 11.8l8.7 30.3c2.4 8.3 4.2 16.7 5.4 25.2c6.9 1.4 13.7 3.3 20.5 5.8c1.8-5.6 4.9-10.8 9-14.8l48.2-47.6c6.1-6.7 15.9-6.4 21.8 .4c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
+                        </svg>
+                        <span className="hidden sm:inline">Generate Step Content</span>
+                        <span className="sm:hidden">Generate</span>
+                      </button>
+                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                        Step {selectedIndex + 1} of {steps.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <label className="mb-2 block text-sm font-semibold text-gray-900">
+                        Step Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={selected.title}
+                        onChange={(e) => patchStep(selected.id, { title: e.target.value })}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-semibold text-gray-900">
+                        Short description
+                      </label>
+                      <input
+                        type="text"
+                        value={selected.subtitle}
+                        onChange={(e) => patchStep(selected.id, { subtitle: e.target.value })}
+                        placeholder="Shown in the step list"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-semibold text-gray-900">
+                        Step Goal <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={selected.goal}
+                        onChange={(e) => patchStep(selected.id, { goal: e.target.value })}
+                        className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      />
+                      <p className="mt-2 text-xs text-gray-500">What should the user accomplish in this step?</p>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-semibold text-gray-900">
+                        AI Instructions <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        rows={5}
+                        value={selected.aiInstructions}
+                        onChange={(e) => patchStep(selected.id, { aiInstructions: e.target.value })}
+                        className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      />
+                      <p className="mt-2 text-xs text-gray-500">How the mentor should guide the user during this step</p>
+                    </div>
+
+                    <div>
+                      <div className="mb-3 flex items-center justify-between">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-900">Suggested Questions</label>
+                          <p className="mt-1 text-xs text-gray-500">
+                            The mentor uses these as guidance and adapts to the conversation.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          id="add-question-btn"
+                          onClick={() =>
+                            patchStep(selected.id, { questions: [...selected.questions, ""] })
+                          }
+                          className="flex items-center space-x-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
+                        >
+                          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                            <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
+                          </svg>
+                          <span>Add Question</span>
+                        </button>
+                      </div>
+
+                      <div className="space-y-2">
+                        {selected.questions.map((q, qi) => (
+                          <div
+                            key={`${selected.id}-q-${qi}`}
+                            className="flex items-start space-x-2 rounded-lg border border-gray-200 bg-gray-50 p-3"
+                          >
+                            <button
+                              type="button"
+                              className="drag-handle mt-1 cursor-move rounded p-1 transition-colors duration-200 hover:bg-gray-200"
+                              aria-label="Reorder question"
+                            >
+                              <svg className="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 320 512" aria-hidden>
+                                <path d="M64 64c0-17.7 14.3-32 32-32H224c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zm0 128c0-17.7 14.3-32 32-32H224c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32z" />
+                              </svg>
+                            </button>
+                            <input
+                              type="text"
+                              value={q}
+                              onChange={(e) => {
+                                const next = [...selected.questions]
+                                next[qi] = e.target.value
+                                patchStep(selected.id, { questions: next })
+                              }}
+                              className="min-w-0 flex-1 rounded border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              className="rounded p-1.5 transition-colors duration-200 hover:bg-red-100"
+                              aria-label="Remove question"
+                              onClick={() => {
+                                const next = selected.questions.filter((_, j) => j !== qi)
+                                patchStep(selected.id, { questions: next })
+                              }}
+                            >
+                              <svg className="h-4 w-4 text-red-600" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-semibold text-gray-900">
+                        Completion Rule <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={selected.completionRule}
+                        onChange={(e) => patchStep(selected.id, { completionRule: e.target.value })}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                      >
+                        <option>AI decides when the step is complete</option>
+                        <option>User clicks continue</option>
+                        <option>All questions answered</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900">Allow Skip Step</h4>
+                        <p className="text-xs text-gray-600">Let users skip this step if they want</p>
+                      </div>
+                      <label className="relative inline-flex cursor-pointer items-center">
+                        <input
+                          type="checkbox"
+                          checked={selected.allowSkip}
+                          onChange={(e) => patchStep(selected.id, { allowSkip: e.target.checked })}
+                          className="peer sr-only"
+                        />
+                        <div className="peer h-6 w-11 rounded-full bg-gray-300 peer-focus:ring-4 peer-focus:ring-blue-100 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900">Generate Step Summary</h4>
+                        <p className="text-xs text-gray-600">Create a short recap before the next step</p>
+                      </div>
+                      <label className="relative inline-flex cursor-pointer items-center">
+                        <input
+                          type="checkbox"
+                          checked={selected.generateSummary}
+                          onChange={(e) => patchStep(selected.id, { generateSummary: e.target.checked })}
+                          className="peer sr-only"
+                        />
+                        <div className="peer h-6 w-11 rounded-full bg-gray-300 peer-focus:ring-4 peer-focus:ring-blue-100 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              <div
+                id="help-panel"
+                className="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 lg:p-8"
+              >
+                <div className="mb-4 flex items-start space-x-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-600">
+                    <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 384 512" aria-hidden>
+                      <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4C389.7 222.5 432 137.7 432 64c0-35.3-28.7-64-64-64s-64 28.7-64 64c0 35.3 28.7 64 64 64c0 0 0 0 0 0c0 0 0 0 0 0l-32 32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c-17.7 0-32 14.3-32 32s14.3 32 32 32c0 0 0 0 0 0c53 0 96 43 96 96s-43 96-96 96s-96-43-96-96c0-17.7 14.3-32 32-32s32 14.3 32 32c0 35.3-28.7 64-64 64l0 0-32-32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c0 0 0 0 0 0l32 32c0 0 0 0 0 0c35.3 0 64 28.7 64 64s-28.7 64-64 64z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="mb-1 text-lg font-bold text-gray-900">Tips for designing mentor steps</h3>
+                    <p className="text-sm text-gray-600">Create effective step-by-step guidance</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-700">
+                    Keep each step focused on one outcome, limit guiding questions to a handful, and use summaries on
+                    longer flows so users feel progress.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-1">
+              <div className="sticky top-6">
+                <div id="preview-panel" className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-gray-900">Live Preview</h3>
+                    <span className="text-xs text-gray-500">User view</span>
+                  </div>
+
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="overflow-hidden rounded-lg bg-white shadow-md">
+                      <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white">
+                            {selectedIndex + 1}
+                          </div>
+                          <span className="text-sm font-semibold text-white">
+                            Step {selectedIndex + 1} of {steps.length}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-5">
+                        <h3 className="mb-3 text-base font-bold text-gray-900">
+                          {activePreview.title.trim() || "Untitled step"}
+                        </h3>
+
+                        <div className="space-y-3">
+                          <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+                            <div className="flex items-start space-x-2">
+                              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600">
+                                <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                                  <path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0A56 56 0 1 1 168 256zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm leading-relaxed text-gray-900">
+                                  {activePreview.goal.trim() ||
+                                    "Your mentor introduces this step and guides the user through it."}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {activePreview.questions[0] ? (
+                            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+                              <div className="flex items-start space-x-2">
+                                <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600">
+                                  <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                                    <path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0A56 56 0 1 1 168 256zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-semibold text-gray-900">{activePreview.questions[0]}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <div className="mt-4 border-t border-gray-200 pt-4">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="text"
+                              placeholder="Type your response..."
+                              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none"
+                              readOnly
+                            />
+                            <button
+                              type="button"
+                              className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
+                            >
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
+                                <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.8 12.5-11.4 22.4-23.9 25.4c-4.7 1-9.4 1.4-14.1 1.4c-4.4 0-8.8-.4-13.1-1.2l-3.4-.7-56.2 90.3c-8.4 13.5-24.6 21.5-41.7 21.5H192c-8.5 0-16.8-2.7-24.2-7.6L96 480 16 352 128 224l96 64 288-320L498.1 5.6z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-lg border border-blue-100 bg-blue-50 p-4">
+                    <div className="flex items-start space-x-2">
+                      <svg className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" fill="currentColor" viewBox="0 0 512 512" aria-hidden>
+                        <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zM192 176a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
+                      </svg>
+                      <p className="text-xs leading-relaxed text-gray-700">
+                        This preview reflects the step you have selected in the list.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-                </main>
+          </div>
+
+          <div
+            id="wizard-navigation"
+            className="sticky bottom-0 mt-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:mt-8 lg:p-6"
+          >
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                className="rounded-lg px-4 py-2.5 font-semibold text-gray-700 transition-colors duration-200 hover:bg-gray-100 lg:px-6"
+              >
+                Cancel
+              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={() => router.push(`/studios/${studioId}/mentors/new`)}
+                  className="flex items-center space-x-2 rounded-lg px-4 py-2.5 font-semibold text-gray-700 transition-colors duration-200 hover:bg-gray-100 lg:px-6"
+                >
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                    <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                  </svg>
+                  <span className="hidden sm:inline">Back to Details</span>
+                  <span className="sm:hidden">Back</span>
+                </button>
+                <button
+                  type="button"
+                  className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-2.5 font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-700 hover:shadow-lg lg:px-8"
+                  onClick={() => router.push(`/studios/${studioId}/mentors/new/step-3`)}
+                >
+                  <span className="hidden sm:inline">Continue to Conversations</span>
+                  <span className="sm:inline lg:hidden">Continue</span>
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 448 512" aria-hidden>
+                    <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }

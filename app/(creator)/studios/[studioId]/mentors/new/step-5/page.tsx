@@ -335,9 +335,13 @@ export default function NewMentorStep5Page() {
                     Cancel
                   </button>
                   <div className="flex items-center space-x-3">
-                    <button type="button" className="px-4 lg:px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/studios/${studioId}/mentors/new/step-4`)}
+                      className="px-4 lg:px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                    >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 448 512" aria-hidden><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" /></svg>
-                      <span className="hidden sm:inline">Back to Mentor Steps</span>
+                      <span className="hidden sm:inline">Back to Starters</span>
                       <span className="sm:hidden">Back</span>
                     </button>
                     <button

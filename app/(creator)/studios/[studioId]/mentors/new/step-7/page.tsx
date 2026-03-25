@@ -100,9 +100,9 @@ export default function NewMentorStep7Page() {
                           <button
                             type="button"
                             className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
-                            onClick={() => router.push(`/studios/${studioId}/mentors/new/step-4`)}
+                            onClick={() => router.push(`/studios/${studioId}/mentors/new/step-2`)}
                           >
-                            Edit Steps (Step 4)
+                            Edit Flow (Step 2)
                           </button>
                           <button
                             type="button"

@@ -625,7 +625,7 @@ export default function NewMentorPage() {
                     router.push(`/studios/${studioId}/mentors/new/step-2`)
                   }
                 >
-                  <span>Continue to Instructions</span>
+                  <span>Continue to Flow</span>
                   <svg
                     className="h-5 w-5"
                     fill="currentColor"

@@ -6,9 +6,9 @@ const STEPS = [1, 2, 3, 4, 5, 6, 7] as const;
 
 const STEP_LABELS: Record<(typeof STEPS)[number], string> = {
   1: "Details",
-  2: "Instructions",
-  3: "Starters",
-  4: "Flow",
+  2: "Flow",
+  3: "Conversations",
+  4: "Starters",
   5: "CTA",
   6: "Access",
   7: "Review",
