@@ -198,21 +198,6 @@ function mockGenerateStepContent(title: string, goal: string): Pick<FlowStep, "a
   }
 }
 
-function buildSimulatedOpening(step: FlowStep): string {
-  const title = step.title.trim() || "this step"
-  const goal = step.goal.trim()
-  const ins = step.aiInstructions.trim()
-  const parts: string[] = []
-  parts.push(`Let’s start with ${title}.`)
-  if (goal) parts.push(goal)
-  else parts.push("I’ll guide you with a few focused questions so we can move forward together.")
-  if (ins) {
-    const snippet = ins.slice(0, 260).trim()
-    if (snippet) parts.push(snippet.endsWith(".") ? snippet : `${snippet}.`)
-  }
-  return parts.join(" ")
-}
-
 export default function NewMentorStep2Page() {
   const params = useParams()
   const studioId = String(params.studioId ?? "")
@@ -336,9 +321,6 @@ export default function NewMentorStep2Page() {
     })
   }, [])
 
-  const activePreview = selected ?? steps[0]
-  const simulatedOpening = useMemo(() => buildSimulatedOpening(activePreview), [activePreview])
-
   return (
     <div className="bg-gray-50 font-sans">
       <main className="flex-1 overflow-x-hidden overflow-y-auto">
@@ -353,7 +335,7 @@ export default function NewMentorStep2Page() {
           <MentorWizardProgress currentStep={2} />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-            <div className="space-y-6 lg:col-span-3">
+            <div className="space-y-6 lg:col-span-4">
               <div
                 id="mentor-steps-form"
                 className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100"
@@ -536,7 +518,7 @@ export default function NewMentorStep2Page() {
               </div>
             </div>
 
-            <div className="min-w-0 space-y-6 lg:col-span-6">
+            <div className="min-w-0 space-y-6 lg:col-span-8">
               {selected ? (
                 <div
                   ref={editorRef}
@@ -599,10 +581,10 @@ export default function NewMentorStep2Page() {
                         Step Goal <span className="text-red-500">*</span>
                       </label>
                       <textarea
-                        rows={2}
+                        rows={3}
                         value={selected.goal}
                         onChange={(e) => patchStep(selected.id, { goal: e.target.value })}
-                        className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                        className="w-full min-h-[5.5rem] resize-y rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
                       />
                       <p className="mt-2 text-xs text-gray-500">What should the user accomplish in this step?</p>
                     </div>
@@ -612,10 +594,10 @@ export default function NewMentorStep2Page() {
                         AI Instructions <span className="text-red-500">*</span>
                       </label>
                       <textarea
-                        rows={5}
+                        rows={8}
                         value={selected.aiInstructions}
                         onChange={(e) => patchStep(selected.id, { aiInstructions: e.target.value })}
-                        className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                        className="w-full min-h-[12rem] resize-y rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
                       />
                       <p className="mt-2 text-xs text-gray-500">How the mentor should guide the user during this step</p>
                     </div>
@@ -756,78 +738,6 @@ export default function NewMentorStep2Page() {
                   <p className="text-sm text-gray-700">
                     Keep each step focused on one outcome, limit guiding questions to a handful, and use summaries on
                     longer flows so users feel progress.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6 lg:col-span-3">
-              <div className="sticky top-6">
-                <div
-                  id="preview-panel"
-                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100"
-                >
-                  <div className="mb-4 flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-bold text-gray-900">Live Simulation</h3>
-                    <span className="shrink-0 text-xs text-gray-500">Selected step</span>
-                  </div>
-
-                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                    <div className="overflow-hidden rounded-xl bg-white shadow-md ring-1 ring-gray-100">
-                      <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3">
-                        <div className="flex min-w-0 items-center gap-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white">
-                            {selectedIndex + 1}
-                          </div>
-                          <span className="truncate text-sm font-semibold text-white">
-                            Step {selectedIndex + 1} of {steps.length}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="max-h-[min(420px,55vh)] space-y-4 overflow-y-auto p-4">
-                        <h3 className="text-base font-bold text-gray-900">
-                          {activePreview.title.trim() || "Untitled step"}
-                        </h3>
-
-                        <div>
-                          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-                            AI
-                          </p>
-                          <div className="rounded-xl rounded-tl-md border border-blue-100 bg-blue-50 px-3 py-2.5 shadow-sm">
-                            <p className="text-sm leading-relaxed text-gray-900">{simulatedOpening}</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-                            User
-                          </p>
-                          <div className="flex flex-col gap-2">
-                            {activePreview.questions.filter((q) => q.trim()).length === 0 ? (
-                              <p className="text-xs text-gray-500">Add suggested questions to see tap options here.</p>
-                            ) : (
-                              activePreview.questions
-                                .map((q) => q.trim())
-                                .filter(Boolean)
-                                .map((q, qi) => (
-                                  <button
-                                    key={`${activePreview.id}-sim-q-${qi}`}
-                                    type="button"
-                                    className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-xs font-medium text-gray-800 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/80"
-                                  >
-                                    {q}
-                                  </button>
-                                ))
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="mt-4 text-xs leading-relaxed text-gray-600">
-                    This simulates how your mentor will guide users during this step.
                   </p>
                 </div>
               </div>
