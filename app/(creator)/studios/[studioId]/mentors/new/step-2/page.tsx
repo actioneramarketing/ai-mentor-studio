@@ -335,7 +335,7 @@ export default function NewMentorStep2Page() {
           <MentorWizardProgress currentStep={2} />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-            <div className="min-w-0 space-y-6 lg:col-span-4">
+            <div className="min-w-0 space-y-6 lg:col-span-8">
               <div
                 id="mentor-steps-form"
                 className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100"
@@ -717,11 +717,13 @@ export default function NewMentorStep2Page() {
               ) : null}
             </div>
 
-            <div className="min-w-0 lg:col-span-8">
+            <div className="min-w-0 lg:col-span-4">
               <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100">
-                <h3 className="mb-4 text-lg font-bold text-gray-900">Live Preview</h3>
-                <div className="text-sm text-gray-600">
-                  This will simulate how your mentor behaves based on the current step.
+                <div className="mx-auto max-w-sm">
+                  <h3 className="mb-4 text-lg font-bold text-gray-900">Live Preview</h3>
+                  <div className="text-sm text-gray-600">
+                    This will simulate how your mentor behaves based on the current step.
+                  </div>
                 </div>
               </div>
             </div>
