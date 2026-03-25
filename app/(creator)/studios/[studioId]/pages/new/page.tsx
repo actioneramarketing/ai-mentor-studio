@@ -37,7 +37,7 @@ export default function NewStudioPage({
       <main className="mx-auto max-w-2xl p-6">
         <div className="mb-8">
           <Link
-            href={`/studios/${studioId}/settings`}
+            href={`/studios/${studioId}/settings?tab=studio-pages`}
             className="text-sm font-medium text-blue-600 hover:text-blue-700"
           >
             ← Back to Studio Settings

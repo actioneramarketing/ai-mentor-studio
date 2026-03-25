@@ -164,7 +164,7 @@ export default function StudioPageBuilderPage({
       const pages = loadPages(studioId)
       const page = pages.find((p) => p.id === pageId)
       if (!page) {
-        router.replace(`/studios/${studioId}/settings`)
+        router.replace(`/studios/${studioId}/settings?tab=studio-pages`)
         return
       }
       setPageName(page.name)
@@ -235,7 +235,7 @@ export default function StudioPageBuilderPage({
               className="w-full max-w-xl truncate rounded-xl border border-gray-200 px-4 py-2.5 text-lg font-semibold text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500"
             />
             <Link
-              href={`/studios/${studioId}/settings`}
+              href={`/studios/${studioId}/settings?tab=studio-pages`}
               className="mt-2 inline-block text-xs font-medium text-blue-600 hover:text-blue-700"
             >
               ← Studio Settings

@@ -1,17 +1,97 @@
 "use client"
 
 import Link from "next/link"
-import { use, useState } from "react"
+import { Suspense, use, useMemo } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import { StudioPagesTab } from "@/components/studio-pages/StudioPagesTab"
 
-export default function StudioSettingsPage({
+const tabs = [
+  { key: "general", label: "General" },
+  { key: "access", label: "Access & Visibility" },
+  { key: "ai", label: "AI Configuration" },
+  { key: "plans", label: "Plans" },
+  { key: "members", label: "Members" },
+  { key: "studio-pages", label: "Studio Pages" },
+  { key: "danger", label: "Danger Zone" },
+] as const
+
+type SettingsTabKey = (typeof tabs)[number]["key"]
+
+const TAB_KEYS = new Set<string>(tabs.map((t) => t.key))
+
+function TabIcon({ tabKey }: { tabKey: SettingsTabKey }) {
+  switch (tabKey) {
+    case "general":
+      return (
+        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z" />
+        </svg>
+      )
+    case "access":
+      return (
+        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+        </svg>
+      )
+    case "ai":
+      return (
+        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+        </svg>
+      )
+    case "plans":
+      return (
+        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+        </svg>
+      )
+    case "members":
+      return (
+        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+        </svg>
+      )
+    case "studio-pages":
+      return (
+        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+        </svg>
+      )
+    case "danger":
+      return (
+        <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+        </svg>
+      )
+  }
+}
+
+function StudioSettingsPageInner({
   params,
 }: {
   params: Promise<{ studioId: string }>
 }) {
   const { studioId } = use(params)
-  const [activeTab, setActiveTab] = useState("general")
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const activeTab = useMemo((): SettingsTabKey => {
+    const tabParam = searchParams.get("tab")
+    if (tabParam && TAB_KEYS.has(tabParam)) {
+      return tabParam as SettingsTabKey
+    }
+    return "general"
+  }, [searchParams])
+
+  function navigateToTab(tabKey: SettingsTabKey) {
+    if (tabKey === "general") {
+      router.replace(`/studios/${studioId}/settings`)
+      return
+    }
+    router.replace(`/studios/${studioId}/settings?tab=${tabKey}`)
+  }
+
   return (
     <div className="bg-gray-50 font-sans min-h-0">
       <main className="flex-1 overflow-y-auto">
@@ -26,48 +106,17 @@ export default function StudioSettingsPage({
 
             <div id="tabs-navigation" className="mb-6 border-b border-gray-200 overflow-x-auto">
               <div className="flex space-x-1 min-w-max">
-                <button type="button" onClick={() => setActiveTab("general")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "general" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z" />
-                  </svg>
-                  General
-                </button>
-                <button type="button" onClick={() => setActiveTab("access")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "access" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-                  </svg>
-                  Access &amp; Visibility
-                </button>
-                <button type="button" onClick={() => setActiveTab("ai")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "ai" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                  </svg>
-                  AI Configuration
-                </button>
-                <button type="button" onClick={() => setActiveTab("plans")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "plans" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-                  </svg>
-                  Plans
-                </button>
-                <button type="button" onClick={() => setActiveTab("members")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "members" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                  </svg>
-                  Members
-                </button>
-                <button type="button" onClick={() => setActiveTab("studio-pages")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "studio-pages" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-                  </svg>
-                  Studio Pages
-                </button>
-                <button type="button" onClick={() => setActiveTab("danger")} className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === "danger" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}>
-                  <svg className="w-4 h-4 mr-2 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
-                  </svg>
-                  Danger Zone
-                </button>
+                {tabs.map(({ key, label }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => navigateToTab(key)}
+                    className={`tab-button px-4 sm:px-6 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${activeTab === key ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all duration-200"}`}
+                  >
+                    <TabIcon tabKey={key} />
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -680,5 +729,23 @@ export default function StudioSettingsPage({
           </div>
       </main>
     </div>
+  )
+}
+
+export default function StudioSettingsPage({
+  params,
+}: {
+  params: Promise<{ studioId: string }>
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-gray-50 font-sans min-h-0 p-6 text-sm text-gray-600">
+          Loading settings…
+        </div>
+      }
+    >
+      <StudioSettingsPageInner params={params} />
+    </Suspense>
   )
 }
