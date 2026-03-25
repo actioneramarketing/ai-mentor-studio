@@ -335,7 +335,7 @@ export default function NewMentorStep2Page() {
           <MentorWizardProgress currentStep={2} />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-            <div className="space-y-6 lg:col-span-4">
+            <div className="min-w-0 space-y-6 lg:col-span-4">
               <div
                 id="mentor-steps-form"
                 className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100"
@@ -516,9 +516,7 @@ export default function NewMentorStep2Page() {
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="min-w-0 space-y-6 lg:col-span-8">
               {selected ? (
                 <div
                   ref={editorRef}
@@ -717,28 +715,13 @@ export default function NewMentorStep2Page() {
                   </div>
                 </div>
               ) : null}
+            </div>
 
-              <div
-                id="help-panel"
-                className="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 p-6"
-              >
-                <div className="mb-4 flex items-start space-x-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-600">
-                    <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 384 512" aria-hidden>
-                      <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4C389.7 222.5 432 137.7 432 64c0-35.3-28.7-64-64-64s-64 28.7-64 64c0 35.3 28.7 64 64 64c0 0 0 0 0 0c0 0 0 0 0 0l-32 32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c-17.7 0-32 14.3-32 32s14.3 32 32 32c0 0 0 0 0 0c53 0 96 43 96 96s-43 96-96 96s-96-43-96-96c0-17.7 14.3-32 32-32s32 14.3 32 32c0 35.3-28.7 64-64 64l0 0-32-32 0 0c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64c0 0 0 0 0 0c0 0 0 0 0 0l32 32c0 0 0 0 0 0c35.3 0 64 28.7 64 64s-28.7 64-64 64z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-bold text-gray-900">Tips for designing mentor steps</h3>
-                    <p className="text-sm text-gray-600">Create effective step-by-step guidance</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-700">
-                    Keep each step focused on one outcome, limit guiding questions to a handful, and use summaries on
-                    longer flows so users feel progress.
-                  </p>
+            <div className="min-w-0 lg:col-span-8">
+              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-gray-100">
+                <h3 className="mb-4 text-lg font-bold text-gray-900">Live Preview</h3>
+                <div className="text-sm text-gray-600">
+                  This will simulate how your mentor behaves based on the current step.
                 </div>
               </div>
             </div>
